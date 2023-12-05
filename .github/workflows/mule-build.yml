@@ -1,0 +1,206 @@
+##########################################################################
+# CICD Pipeline
+##########################################################################
+
+# Configuration for this template:
+# 1.- Replace the predefined repository btfacrm/common-devops with your own.
+# 2.- Update the global environment variables for the script 
+
+name: Build
+on:
+  workflow_call:
+    inputs:
+      keyvault-key:
+        required: true
+        description: Access key to KeyVault
+        type: string
+    secrets:
+      azure-credentials:
+        required: true
+        description: Azure Credentials for login
+env:
+  DEFAULT_SETTINGS_XML: settings.xml
+  CONFIGURATIONS_REPOSITORY: common-configurations
+  
+jobs:
+
+  ##########################################################################
+  # BUILD MULESOFT SERVICE
+  ##########################################################################
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get global configuration
+        uses: btfacrm/common-devops/packages/configuration-service@main
+        with:
+          keyvault-key: ${{ inputs.keyvault-key }}
+          azure-credentials: ${{ secrets.azure-credentials }}
+          environment: unit-test
+
+      - name: Verify if the github tag exists
+        if: "!contains(env.service_version, 'snapshot')"
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Verify if github tag exists "
+          echo "***********************************************"
+          echo " "
+          # git config --global user.name "GitHubActions"
+          # git config --global user.email "github-actions@users.noreply.github.com"
+
+          tag_exist=$(git tag $service_version)
+          if [ "$tag_exist" != "" ] ; then
+            echo "The tag already exists in Github; update the POM version for the service."
+            exit 1
+          else
+            echo "Create tag $service_version for the respository"
+          fi
+
+      - name: Install Java JDK for Mulesoft Applications
+        uses: btfacrm/common-devops/packages/install-java@main
+        with:
+          github-configurations-accesstoken: $github_admintasks_accesstoken
+          default-settings-xml: $DEFAULT_SETTINGS_XML
+
+      - name: Documentation - Anypoint Exchange
+        run: |
+          echo " "
+          echo "Configuring the directory for Anypoint Exchange documentation"
+          if [ -d "exchange-docs" ]; then
+            echo "  Directory exchange-docs exists and will not be overriden with README.md" 
+          else
+            echo "  Creating directory 'exchange-doc' with home.md from README.md"
+            mkdir -p exchange-docs
+            mkdir -p exchange-docs/docs
+            cp -Rfpv README.md exchange-docs/home.md
+            cp -Rfpv docs/*.* exchange-docs/docs 
+          fi
+          echo " "
+        
+      - name: Compile code    
+        run: mvn --batch-mode compile
+  
+      - name: Run test cases and package
+        id: run-test-cases
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Run test cases and package"
+          echo "***********************************************"
+          echo " "
+          skiptest=" "
+          if [[ "${{env.configuration_skiptest}}" == "true" ]]; then
+            skiptest="-DskipTests"
+            echo "Test will be skipped"
+          else
+            echo "The asset will be tested"
+          fi
+
+          # Possible solution for parameters with spaces, but not working
+          # mvn --batch-mode $skiptest package "$configuration_unittest"
+
+          # Next approach doesn't work with parameters with spaces
+          mvn --batch-mode $skiptest package $configuration_unittest
+          
+          #echo " "
+          #echo "Preparing mvn command"
+          # command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
+          # command="$(echo "mvn --batch-mode $skiptest package $configuration_unittest")"
+          # command=`echo "mvn --batch-mode $skiptest package $configuration_unittest"`
+          # command=`echo 'mvn --batch-mode $skiptest package $configuration_unittest'`
+          
+          #echo "  The command is: $command"
+
+          #echo " "
+          #echo "Executing..."
+          #eval $command
+
+      - name: Summary - Test
+        uses: btfacrm/common-devops/packages/summary-junit@main
+        with:
+          badge-label: Unit test
+          badge-suffix: ut
+          path-report: 'target/surefire-reports/*.xml'
+          path-directoryreports: 'target/surefire-reports/*'
+
+      - name: Summary - Code Coverage
+        uses: btfacrm/common-devops/packages/summary-codecoverage@main
+
+      #########################################################
+      # Next actions only if application is not a snapshot
+      #########################################################
+      - name: Deploy to anypoint exchange
+        if: "!contains(env.service_version, 'snapshot')"
+        run: |
+          ## Deploy to anypoint exchange
+          mvn --batch-mode deploy -DskipTests 
+
+      - name: Tag repository with service version
+        if: "!contains(env.service_version, 'snapshot')"
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Tag repository with service version "
+          echo "***********************************************"
+          echo " "
+          git push origin $service_version
+          
+      - name: Create a release
+        uses: ncipollo/release-action@v1
+        if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
+        with: 
+          artifacts: "target/*.jar"
+          artifactErrorsFailBuild: true
+          tag: ${{ env.service_version }}
+          name: ${{ env.service_version }}
+
+      - name: Create badge for workflow number
+        uses: btfacrm/common-devops/packages/badge@main
+        if: "!contains(env.service_version, 'snapshot')"
+        with:
+          label: Build job
+          status: '${{ github.run_number }}'
+          color: '535597'
+          file: ${{ env.service_name }}-wf.svg
+      
+      ##################################################
+      # Create a relelase only for jar files
+      ##################################################
+      - name: Create badge for release
+        uses: btfacrm/common-devops/packages/badge@main
+        if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
+        with:
+          label: Release
+          status: '${{ env.service_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-re.svg
+
+      - id: issue-create
+        name: Create a deployment issue
+        if: "env.configuration_deployable == 'true' && !contains(env.service_version, 'snapshot')"
+        env:
+          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Create Deployment Issue "
+          echo "***********************************************"
+          echo " "
+          echo "  Create issue for deployment in dev"
+          gh -R "${{ github.repository }}" issue create \
+              -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
+              -a "${{ env.github_deployeruser }}" \
+              -b "The build job triggered this action. An analysis task will be responsible for checking if the service is deployable." \
+              -l "forward,dev"

@@ -1,0 +1,54 @@
+name: 'Execute Mulesoft BAT'
+description: 'Execute Mulesoft BAT'
+inputs:
+  keyvault-key:
+    required: true
+    description: The name of the KeyVault
+  azure-credentials:
+    required: true
+    description: Azure Credentials for login
+  deployment-env:
+    required: true
+    description: Deployment environment for the service
+outputs:
+  outcome:
+    description: "The result of the test: success, failure, skipped"
+    value: ${{ steps.run-tests.outputs.outcome }}
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Install Mulesoft BAT
+      shell: bash
+      if: ${{ hashFiles('bat') == '' }}
+      run: |
+        echo "test_outcome=skipped" >> $GITHUB_ENV
+
+    - name: Install Mulesoft BAT
+      shell: bash
+      if: ${{ hashFiles('bat') != '' }}
+      run: |
+          curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
+          echo "bat -version: $(bat -version)"
+
+    - name: Run tests
+      id: run-tests
+      if: ${{ hashFiles('bat') != '' }}
+      shell: bash  
+      run: |
+        cd bat
+        mkdir target
+        echo "outcome=failure" >> $GITHUB_OUTPUT      
+        bat
+        echo "outcome=success" >> $GITHUB_OUTPUT      
+
+    - name: Summary - Test
+      uses: btfacrm/common-devops/packages/summary-junit@main
+      if: always()
+      with:
+        badge-label: ${{ env.deployment_environment }} test
+        badge-suffix: ${{ env.deployment_environment }}-test
+        path-report: bat/target/JUnit.xml
+        path-directoryreports: bat/target/*
+  

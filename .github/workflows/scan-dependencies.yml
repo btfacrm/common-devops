@@ -1,0 +1,85 @@
+##########################################################################
+# Scan Maven Dependencies
+##########################################################################
+name: scan-dependencies
+
+on:
+  # schedule:
+    # crontab guru https://crontab.guru/
+    # - cron: "0 0 * * 5"
+  workflow_call:
+
+jobs:
+  scan-dependencies:
+    name: scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the source code
+        uses: actions/checkout@v4
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+                
+      - name: Setup JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Scan maven dependencies
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Scan plugins"
+          echo "***********************************************"
+          echo " "
+          SCAN_RESULT=$(mvn versions:display-plugin-updates)
+          ERROR="false"
+
+          if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
+            echo "  ***********************************************"
+            echo "  Update plugins!!"
+            echo "  ***********************************************"
+            echo " "
+            mvn versions:display-plugin-updates
+            ERROR="true"
+            echo " "
+            echo " "
+            echo " "
+            echo " "
+          else
+            echo "Plugins up to date"
+          fi
+
+          SCAN_RESULT=$(mvn versions:display-dependency-updates)
+          echo " "
+          echo "***********************************************"
+          echo "Scan dependencies"
+          echo "***********************************************"
+          echo " "
+          if [[ $SCAN_RESULT == *"The following dependencies"* ]]; then
+            echo "  ***********************************************"
+            echo "  Update dependencies!!"
+            echo "  ***********************************************"
+            echo " "
+            mvn versions:display-dependency-updates
+            ERROR="true"
+          else
+            echo "Dependencies up to date"
+          fi
+
+          if [ "$ERROR" = "true" ]; then
+            echo " "
+            echo " "
+            echo "Project plugins/dependencies should be updated!"
+            exit 1 # terminate and indicate error 
+          fi
+

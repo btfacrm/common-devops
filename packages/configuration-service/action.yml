@@ -1,0 +1,367 @@
+name: 'Get global configuration'
+description: 'Get the global configuration and secrets from Azure KeyVault'
+inputs:
+  keyvault-key:
+    required: true
+    description: The name of the KeyVault
+  azure-credentials:
+    required: true
+    description: Azure Credentials for login
+  environment:
+    required: true
+    description: Get the configuration the the specified environment
+    type: choice
+    options:
+    - dev
+    - tst
+    - prd
+    - unit-test
+  debug:
+    required: false
+    type: boolean
+    default: false
+    description: Flag to debug this action, default is false
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: DEBUG - Show action variables
+      if: inputs.debug == 'true'
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"      
+        echo "DEBUG variables"
+        echo "*********************************************"
+        echo " "
+
+        tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
+        echo "Value for inputs.azure-credentials: $tempvar"
+        echo "  keyvault-key: ${{ inputs.keyvault-key }}"
+        echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
+        echo "  environment: ${{ inputs.environment }}"
+
+    # Note: if not sure if azure-credentials variable is not well configured, then try github action:
+    # dmitriybobrovskiy/get-azure-keyvault-secrets, will show more details when authenticating 
+
+    - name: DEBUG - Authentication with Azure
+      if: inputs.debug == 'true'
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.azure-credentials }}
+ 
+    - name: DEBUG - Run Azure CLI
+      shell: bash
+      if: inputs.debug == 'true'
+      run: |
+        az version
+
+    - name: Get the access token to read files on configuration repository
+      uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+      with:
+        keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+        secrets: |
+          github_admintasks_accesstoken=github-admintasks-accesstoken
+        login_credentials: ${{ inputs.azure-credentials }}
+
+    - name: Get secrets configuration
+      env:
+        SECRET_MAP_FILE: _secrets.env 
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"
+        echo "Get the configuration for secrets"
+        echo "*********************************************"
+
+        echo "Variable. github_admintasks_accesstoken: $github_admintasks_accesstoken"
+
+        # Get the secrets mapping
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$SECRET_MAP_FILE"
+        echo "Getting the secrets mapping file: $urlconfigurationfile"
+        initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
+
+        temporal=""
+        echo "$initialsecretconfiguration" | while read p; do
+          if [[ "$p" =~ ^#.*  ]]; then
+            echo "   A comment found"
+          else
+            temporal=$(echo "$temporal $p")
+            echo "   Variable found: $p"
+          fi
+          echo "$temporal" > configurationmap.txt
+        done 
+
+        echo ""
+        configurationmap=$(cat configurationmap.txt)
+        echo "Configuration file to get the secrets: $configurationmap"
+        
+        # Enable only for debug
+        # echo "initialsecretconfiguration: $initialsecretconfiguration"
+        echo ""
+
+
+    - name: Get Azure KeyVault
+      uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+      with:
+        keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+        secrets_file_path: configurationmap.txt
+
+    - name: Get global configuration
+      env:
+        SECRET_MAP_FILE: _global.yml
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"
+        echo "Get global configuration"
+        echo "*********************************************"
+
+        echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
+
+        # Get the configuration file from the github repository
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$SECRET_MAP_FILE"
+        echo "Getting the secrets mapping file: $urlconfigurationfile"
+        initialsecretconfiguration=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
+
+        # Verify if configuration file was found
+        if [[ $configurationdata != *"Not Found"* ]]; then
+          echo "A configuration file for the service was found"
+          
+          # Write the configuration file in the filesystem
+          echo "$initialsecretconfiguration" > global.yml
+        else
+          echo "No configuration file found, returning an empty file"
+          touch global.yml
+        fi
+
+    - name: Import variables from global.yml
+      uses: zlatko-ms/envarfiles@main
+      with:
+        paths: global.yml
+
+    - name: Get service metadata from pom.xml
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Getting service metadata from pom.xml "
+        echo "**************************************"
+        echo " "
+
+        # Install libxml2 tools for xmllint
+        sudo apt-get install -y libxml2-utils
+
+        # Get info from pom.xml
+        servicename=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml)
+        serviceversion=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+        servicegroup=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='groupId']/text()" pom.xml)
+        serviceartifact=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='artifactId']/text()" pom.xml)
+        
+        echo "Create environment variables"
+        echo "service_name=$servicename" >> $GITHUB_ENV
+        echo "service_version=$serviceversion" >> $GITHUB_ENV
+        echo "service_group=$servicegroup" >> $GITHUB_ENV
+        echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
+
+        echo " "
+        echo "Service information:"
+        echo "  service_name= " $servicename
+        echo "  service_version= " $serviceversion          
+        echo "  service_group= " $servicegroup
+        echo "  service_artifact= " $serviceartifact
+
+    - name: Environment information
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Configuration for environment: ${{ inputs.environment }} "
+        echo "**************************************"
+        echo " "
+
+    ##########################################################################
+    # Configuration for unit-test
+    ##########################################################################
+
+    - name: Get maven settings configuration
+      id: configuration-settings
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".settings"
+
+    - name: Get the skiptest property for the service
+      id: configuration-skiptest
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".skiptests"
+
+    - name: Get the deployable property for the service
+      id: configuration-deployable
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployable"
+
+    - name: Get the properties for unit test
+      id: configuration-unittest
+      if: ${{ inputs.environment == 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".test-properties"
+
+    ##########################################################################
+    # Configuration for all environments: dev, tst, prd
+    ##########################################################################
+
+    - name: Get configuration for CloudHub 1 deployment
+      id: configuration-cloudhub
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".cloudhub"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment properties
+      id: configuration-properties
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".properties"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment name
+      id: configuration-deployment-name
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.name"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment organization
+      id: configuration-deployment-organization
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.organization"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment host
+      id: configuration-deployment-host
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.host"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment custom logger
+      id: configuration-deployment-customlogger
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.customlogger"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for service environment variables
+      id: configuration-env
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".env"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Generate environment variables for the service
+      id: generate-service-env-variables
+      if: ${{ inputs.environment != 'unit-test' }}
+      shell: bash
+      run: |
+        echo " "
+        echo "***********************************************"
+        echo "Generate environment variables for the service "
+        echo "***********************************************"
+        echo " "
+
+        service_configuration_raw='${{steps.configuration-env.outputs.configuration-data}}'
+
+        if [ "$service_configuration_raw" = "null" ] || [ "$service_configuration_raw" = "" ] ; then
+          echo "There are no environment variables for the service!"
+        else
+          service_configuration_lines=$( echo $service_configuration_raw | tr ' ' '\n' )
+          echo -e "Configuration formated:\n$service_configuration_lines "
+          echo " "
+
+          echo "Variables found: "
+          echo "$service_configuration_lines" | while read p; do
+
+            # Get variable and value
+            line=$(echo "$p")
+            name="$(cut -d'=' -f1 <<<$line)"
+            value="$(cut -d'=' -f2 <<< $line)"
+            echo "- name: " $name
+            echo "  value: " $value
+
+            # Override the value with a possible environment variable
+            value_fromvariable=$(eval "echo $value")
+            echo "  new value: " $value_fromvariable
+
+            echo "  Create environment variable"
+            echo "$name=$value_fromvariable" >> $GITHUB_ENV
+
+          done          
+        fi
+
+    ##########################################################################
+    # Exporting variables
+    ##########################################################################
+
+    - name: Exporting configuration variables
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************************"
+        echo "Create environment variables for the configuration"
+        echo "**************************************************"
+        echo " "
+        
+        echo "Environment ${{ inputs.environment }}"
+
+        if [[ ${{inputs.environment}} != "unit-test" ]]; then
+          echo "  creating variables for dev,tst,prd"
+          echo "configuration_cloudhub=${{steps.configuration-cloudhub.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_properties=${{steps.configuration-properties.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_name=${{steps.configuration-deployment-name.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_organization=${{steps.configuration-deployment-organization.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_host=${{steps.configuration-deployment-host.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_customlogger=${{steps.configuration-deployment-customlogger.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_env=${{steps.configuration-env.outputs.configuration-data}}" >> $GITHUB_ENV
+        else
+          echo "  creating variables for unit-test"
+          echo "configuration_settings=${{steps.configuration-settings.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_skiptest=${{steps.configuration-skiptest.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_unittest=${{steps.configuration-unittest.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployable=${{steps.configuration-deployable.outputs.configuration-data}}" >> $GITHUB_ENV
+        fi
+
+    - name: Debug review configuration environment variables
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************************"
+        echo "Debug - Review configuration environment variables"
+        echo "**************************************************"
+        echo " "
+        echo "Configuration variables:"
+        echo "  configuration_settings= " $configuration_settings
+        echo "  configuration_skiptest= " $configuration_skiptest          
+        echo "  configuration_unittest= " $configuration_unittest
+        echo "  configuration_deployable= " $configuration_deployable
+        echo "  configuration_cloudhub= " $configuration_cloudhub
+        echo "  configuration_properties= " $configuration_properties
+        echo "  configuration_deployment_name= " $configuration_deployment_name
+        echo "  configuration_deployment_organization= " $configuration_deployment_organization
+        echo "  configuration_deployment_host= " $configuration_deployment_host
+        echo "  configuration_deployment_customlogger= " $configuration_deployment_customlogger
+        echo "  configuration_env= " $configuration_env
