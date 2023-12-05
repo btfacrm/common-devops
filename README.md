@@ -2,9 +2,9 @@
 DevOps centralized hub that provides reusable workflows and actions for building CICD pipelines with a detached multi-environment configuration and secrets management.
 
 ## Table of contents
-1. [Installation](#Installation)
 1. [Features](#features)
 1. [Pipeline resources](#pipeline-resources)
+1. [Installation](#Installation)
 1. [Azure KeyVault](#workflows) 
 1. [Repository: mulesoft-configurations](#repository-mulesoft-configurations) 
 1. [Repository: mulesoft-pipeline](#repository-mulesoft-pipeline) 
@@ -13,11 +13,7 @@ DevOps centralized hub that provides reusable workflows and actions for building
 1. [Github Secrets](#github-secrets)
 1. [Examples](#examples)
 
-## Installation
-
-Update the default organization "jpontdia" to the new one in all files, run a find and replace. 
-
-## Features
+## CICD Features
 
 - Standardization of source code layout. Enforces Github and AnypointExchange documentation.
 - Pipeline created with reusable components with simple configuration in yaml files. No need to hardcode any service specific data.
@@ -28,17 +24,20 @@ Update the default organization "jpontdia" to the new one in all files, run a fi
 - Separation of roles: Security Manager configures the KeyVault, and DevOps engeniers responsible of service configuration.
 - Integration testing with Mulesoft Blackbox Automated Testing (BDD tool), say goodby to postman or manual human QA test.
 - Works great with free personal or enterprise github accounts, with private or public repositories
-- Ready to use for Cloudhub 1 and GovCloud, Cloudhub 2 is coming. The current baseline makes easy extensible for runtime fabric or docker images
+- Ready to use for Cloudhub 1, GovCloud abd Cloudhub 2 is coming. The current baseline makes easy extensible for runtime fabric or docker images
 
-## Pipeline resources
+## Required resources
 
-Next is the list with the resources required by the pipeline:
+Next is the list with the resources required by the CICD pipeline:
 
-- Azure Keyvault: A KeyVualt to store all secrets required by services and pipeline
-- Github respository: mulesoft-configurations. Configuration repository for services
-- Github respository: mulesoft-pipeline. Reusable workflows and actions (this repository)
+- Azure Keyvault: A KeyVualt to store all secrets required by services and pipeline.
+- Github respository: common-configurations. Repository to handle the configuration for all services.
 - Github Gist: A Gist to store to code badges: code coverage, test unit, etc.
-- Github Secrets: Secrets stored in Github that allows the connection with Azure Keyvault and Gist
+- Github Secrets: Secrets stored in Github that allows the connection with Azure Keyvault and Gist.
+
+## Installation
+
+Update the default organization "jpontdia" to the new one in all files, run a find and replace. 
 
 
 ## Azure KeyVault
