@@ -62,7 +62,7 @@ runs:
       with:
         keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
         secrets: |
-          github_admintasks_accesstoken=btfacrm-github-admintasks-accesstoken
+          github_admintasks_accesstoken=github-admintasks-accesstoken
         login_credentials: ${{ inputs.azure-credentials }}
 
     - name: Get secrets configuration
