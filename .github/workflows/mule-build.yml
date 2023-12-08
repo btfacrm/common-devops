@@ -44,6 +44,7 @@ jobs:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
           environment: unit-test
+          debug: true
 
       - name: Verify if the github tag exists
         if: "!contains(env.service_version, 'snapshot')"
