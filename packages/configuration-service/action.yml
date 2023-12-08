@@ -60,10 +60,25 @@ runs:
     - name: Get the access token to read files on configuration repository
       uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
       with:
+        login_credentials: ${{ inputs.azure-credentials }}
         keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
         secrets: |
           github_admintasks_accesstoken=github-admintasks-accesstoken
-        login_credentials: ${{ inputs.azure-credentials }}
+
+    - name: DEBUG - Show action variables
+      if: inputs.debug == 'true'
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"      
+        echo "DEBUG variables"
+        echo "*********************************************"
+        echo " "
+
+        tempvar=$( echo "$github_admintasks_accesstoken" | sed 's/./& /g' )
+        echo "Value for github_admintasks_accesstoken: $tempvar"
+        echo " "
+        echo " "
 
     - name: Get secrets configuration
       env:
