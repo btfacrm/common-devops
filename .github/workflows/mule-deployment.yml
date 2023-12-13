@@ -40,8 +40,7 @@ jobs:
   ##################################################################
   verify:
     if: |
-      github.actor == 'btfacrm' ||
-      github.actor == 'tallguyjenks' ||
+      github.actor == 'jpontdia' ||
       github.actor == 'GitHubActions' ||
       github.actor == 'github-actions'
     name: verify
