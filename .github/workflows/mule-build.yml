@@ -163,6 +163,7 @@ jobs:
         with: 
           artifacts: "target/*.jar"
           artifactErrorsFailBuild: true
+          makeLatest: true
           tag: ${{ env.service_version }}
           name: ${{ env.service_version }}
 
