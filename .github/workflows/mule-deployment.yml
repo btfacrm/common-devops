@@ -305,57 +305,57 @@ jobs:
   ##################################################################
   # Custom Logger
   ##################################################################
-  custom-logger:
-    needs: [deployment]
-    if: needs.deployment.outputs.outcome == 'success'
-    name: custom-logger
-    runs-on: ubuntu-latest
+  #custom-logger:
+  #  needs: [deployment]
+  #  if: needs.deployment.outputs.outcome == 'success'
+  #  name: custom-logger
+  #  runs-on: ubuntu-latest
 
-    steps:
-      - name: Get workflow metadata
-        uses: btfacrm/common-devops/packages/configuration-issuemanagement@main
-        with:
-          keyvault-key: '${{ inputs.keyvault-key }}'
-          azure-credentials: '${{ secrets.azure-credentials }}'
+  #  steps:
+  #    - name: Get workflow metadata
+  #      uses: btfacrm/common-devops/packages/configuration-issuemanagement@main
+  #      with:
+  #        keyvault-key: '${{ inputs.keyvault-key }}'
+  #        azure-credentials: '${{ secrets.azure-credentials }}'
 
-      - id: issue-comment-start
-        name: Add issue comment for start process
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE: ${{ github.event.issue.html_url }}
-        shell: bash
-        run: |
-          echo " "
-          echo "****************************************************"
-          echo "Add issue comment: ${{ github.event.issue.number }} "
-          echo "****************************************************"
-          echo " "
-          gh issue comment ${{ github.event.issue.number }} \
-            -b "The process for setting the custom logging is starting" 
+  #    - id: issue-comment-start
+  #      name: Add issue comment for start process
+  #      env:
+  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #        ISSUE: ${{ github.event.issue.html_url }}
+  #      shell: bash
+  #      run: |
+  #        echo " "
+  #        echo "****************************************************"
+  #        echo "Add issue comment: ${{ github.event.issue.number }} "
+  #        echo "****************************************************"
+  #        echo " "
+  #        gh issue comment ${{ github.event.issue.number }} \
+  #          -b "The process for setting the custom logging is starting" 
             
-      - name: Set custom logger
-        id: custom-logger
-        uses: btfacrm/common-devops/packages/process-customlogger@main
-        with:
-          deployment-env: ${{ env.deployment_environment }}
+  #    - name: Set custom logger
+  #      id: custom-logger
+  #      uses: btfacrm/common-devops/packages/process-customlogger@main
+  #      with:
+  #        deployment-env: ${{ env.deployment_environment }}
 
-      - id: issue-comment-end
-        name: Add issue comment for end process
-        if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE: ${{ github.event.issue.html_url }}
-        shell: bash
-        run: |
-          echo " "
-          echo "****************************************************"
-          echo "Add issue comment: ${{ github.event.issue.number }} "
-          echo "****************************************************"
-          echo " "
-          echo "Output steps.custom-logger.outputs.outcome=${{ steps.custom-logger.outputs.outcome }}"
+  #    - id: issue-comment-end
+  #      name: Add issue comment for end process
+  #      if: always()
+  #      env:
+  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #        ISSUE: ${{ github.event.issue.html_url }}
+  #      shell: bash
+  #      run: |
+  #        echo " "
+  #        echo "****************************************************"
+  #        echo "Add issue comment: ${{ github.event.issue.number }} "
+  #        echo "****************************************************"
+  #        echo " "
+  #        echo "Output steps.custom-logger.outputs.outcome=${{ steps.custom-logger.outputs.outcome }}"
 
-          gh issue comment ${{ github.event.issue.number }} \
-            -b "The process for setting the custom logging ended with status=${{ steps.custom-logger.outputs.outcome }}" 
+  #        gh issue comment ${{ github.event.issue.number }} \
+  #          -b "The process for setting the custom logging ended with status=${{ steps.custom-logger.outputs.outcome }}" 
 
 
   ##################################################################
