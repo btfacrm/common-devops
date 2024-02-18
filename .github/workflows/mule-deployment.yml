@@ -31,6 +31,7 @@ env:
   LABEL_FORWARD: "forward"
   LABEL_DEV: "dev"
   LABEL_TST: "tst"
+  LABEL_UAT: "uat"
   LABEL_PRD: "prd"
 
 jobs:
@@ -386,15 +387,6 @@ jobs:
           echo "***********************************************"
           echo " "
           if [ "${{ env.deployment_environment }}" == "dev" ] ; then
-            echo "  Create issue for deployment in tst"
-            gh -R "${{ github.repository }}" issue create \
-              -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
-              -a "${{ env.github_deployeruser }}" \
-              -b "This action was triggered from the forward job in the deployment workflow" \
-              -l "${{ env.LABEL_TST}}" \
-              -m "${{ env.deployment_version }}" \
-              -p "${{ env.github_deploymentproject }}"
-          elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
             echo "  Create issue for deployment in prd"
             gh -R "${{ github.repository }}" issue create \
               -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
@@ -403,7 +395,28 @@ jobs:
               -l "${{ env.LABEL_PRD}}" \
               -m "${{ env.deployment_version }}" \
               -p "${{ env.github_deploymentproject }}"
-          else
-            echo "  There is an error on the logic for deployment: dev -> tst -> prd"
-            exit 1
           fi
+
+#          if [ "${{ env.deployment_environment }}" == "dev" ] ; then
+#            echo "  Create issue for deployment in tst"
+#            gh -R "${{ github.repository }}" issue create \
+#              -t "Deployment tst ${{ env.service_name }} ${{ env.deployment_version }}" \
+#              -a "${{ env.github_deployeruser }}" \
+#              -b "This action was triggered from the forward job in the deployment workflow" \
+#              -l "${{ env.LABEL_TST}}" \
+#              -m "${{ env.deployment_version }}" \
+#              -p "${{ env.github_deploymentproject }}"
+#          elif [ "${{ env.deployment_environment }}" == "tst" ] ; then
+#            echo "  Create issue for deployment in prd"
+#            gh -R "${{ github.repository }}" issue create \
+#              -t "Deployment prd ${{ env.service_name }} ${{ env.deployment_version }}" \
+#              -a "${{ env.github_deployeruser }}" \
+#              -b "This action was triggered from the forward job in the deployment workflow" \
+#              -l "${{ env.LABEL_PRD}}" \
+#              -m "${{ env.deployment_version }}" \
+#              -p "${{ env.github_deploymentproject }}"
+#          else
+#            echo "  There is an error on the logic for deployment: dev -> tst -> prd"
+#            exit 1
+#          fi
+
