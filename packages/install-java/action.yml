@@ -27,11 +27,22 @@ runs:
         distribution: 'temurin'
         #check-latest: true
         cache: 'maven'
+    
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.6
 
     - id: configuration
       name: Get configuration for the service 
       shell: bash
       run: |
+        echo " "
+        echo "*********************************************"
+        echo "Java and Maven configuration"
+        echo "*********************************************"      
+        mvn --version
+
         echo " "
         echo "*********************************************"
         echo "Get the settings configuration file for maven"
