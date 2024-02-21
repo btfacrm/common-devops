@@ -149,7 +149,7 @@ jobs:
         if: "!contains(env.service_version, 'snapshot')"
         run: |
           ## Deploy to anypoint exchange
-          mvn --batch-mode deploy -DskipTests 
+          mvn --batch-mode deploy -DskipTests -Denforcer.skip
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
