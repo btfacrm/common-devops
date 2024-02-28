@@ -165,8 +165,8 @@ runs:
         echo "**************************************"
         echo " "
 
-        # Install libxml2 tools for xmllint
-        sudo apt-get install -y libxml2-utils
+        echo "Install libxml2 tools for xmllint (for getting details from pom.xml)"
+        sudo apt-get install -y libxml2-utils --fix-missing
 
         # Get info from pom.xml
         servicename=$( xmllint --xpath "//*[local-name()='project']/*[local-name()='name']/text()" pom.xml)
