@@ -165,6 +165,10 @@ runs:
         echo "**************************************"
         echo " "
 
+        echo "Test if XMLStarlet is available in Ubuntu"
+        xmlstarlet --version
+        echo " "
+
         echo "Install libxml2 tools for xmllint (for getting details from pom.xml)"
         sudo apt-get install -y libxml2-utils --fix-missing
 
