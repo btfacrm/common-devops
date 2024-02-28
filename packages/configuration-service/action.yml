@@ -178,11 +178,6 @@ runs:
         serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
         servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
         serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
-        # Removing the last character
-        servicename=${servicename:0:-1}
-        serviceversion=${serviceversion:0:-1}
-        servicegroup=${servicegroup:0:-1}
-        serviceartifact=${serviceartifact:0:-1}
         echo " "
 
         echo "Create environment variables with pom data"
