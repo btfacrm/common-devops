@@ -165,12 +165,40 @@ runs:
         echo "**************************************"
         echo " "
 
-        echo "Test if XMLStarlet is available in Ubuntu"
-        sudo apt-get install xmlstarlet --fix-missing
+        echo "Install XMLStarlet in Ubuntu"
+        sudo apt-get install xmlstarlet --fix-missing        
+        echo " "
+
+        echo "xmlstarlet --version"
         xmlstarlet --version
         echo " "
+
+        echo "Get info from pom.xml"
+        servicename=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:name" pom.xml )
+        serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
+        servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
+        serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
+        # Removing the last character
+        servicename=${servicename:0:-1}
+        serviceversion=${serviceversion:0:-1}
+        servicegroup=${servicegroup:0:-1}
+        serviceartifact=${serviceartifact:0:-1}
         echo " "
-        
+
+        echo "Create environment variables with pom data"
+        echo "service_name=$servicename" >> $GITHUB_ENV
+        echo "service_version=$serviceversion" >> $GITHUB_ENV
+        echo "service_group=$servicegroup" >> $GITHUB_ENV
+        echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
+        echo " "
+
+        echo "Service information:"
+        echo "  service_name= " $servicename
+        echo "  service_version= " $serviceversion          
+        echo "  service_group= " $servicegroup
+        echo "  service_artifact= " $serviceartifact
+
+        echo " "
         echo "Install libxml2 tools for xmllint (for getting details from pom.xml)"
         sudo apt-get install -y libxml2-utils --fix-missing
 
@@ -185,13 +213,6 @@ runs:
         echo "service_version=$serviceversion" >> $GITHUB_ENV
         echo "service_group=$servicegroup" >> $GITHUB_ENV
         echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
-
-        echo " "
-        echo "Service information:"
-        echo "  service_name= " $servicename
-        echo "  service_version= " $serviceversion          
-        echo "  service_group= " $servicegroup
-        echo "  service_artifact= " $serviceartifact
 
     - name: Environment information
       shell: bash
