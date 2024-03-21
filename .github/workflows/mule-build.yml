@@ -140,16 +140,12 @@ jobs:
       #########################################################
       # Next actions only if application is not a snapshot
       #########################################################
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v5
-        with:
-          maven-version: 3.8.6
       
       - name: Deploy to anypoint exchange
         if: "!contains(env.service_version, 'snapshot')"
         run: |
           ## Deploy to anypoint exchange
-          mvn --batch-mode deploy -DskipTests -Denforcer.skip
+          mvn --batch-mode deploy -DskipTests
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
