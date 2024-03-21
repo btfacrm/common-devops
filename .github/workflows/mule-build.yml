@@ -141,11 +141,11 @@ jobs:
       # Next actions only if application is not a snapshot
       #########################################################
       
-      #- name: Deploy to anypoint exchange
-      #  if: "!contains(env.service_version, 'snapshot')"
-      #  run: |
-      #    ## Deploy to anypoint exchange
-      #    mvn --batch-mode deploy -DskipTests
+      - name: Deploy to anypoint exchange
+        if: "!contains(env.service_version, 'snapshot')"
+        run: |
+          ## Deploy to anypoint exchange
+          mvn deploy -DskipTests
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
