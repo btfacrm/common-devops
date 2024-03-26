@@ -286,6 +286,14 @@ runs:
         yaml-path: ".deployment.customlogger"
         suffix: "-${{ inputs.environment }}"
 
+    - name: Get configuration for deployment type
+      id: configuration-deployment-type
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: btfacrm/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.type"
+        suffix: "-${{ inputs.environment }}"
+
     - name: Get configuration for service environment variables
       id: configuration-env
       if: ${{ inputs.environment != 'unit-test' }}
@@ -357,6 +365,7 @@ runs:
           echo "configuration_deployment_organization=${{steps.configuration-deployment-organization.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_host=${{steps.configuration-deployment-host.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_customlogger=${{steps.configuration-deployment-customlogger.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_type=${{steps.configuration-deployment-type.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_env=${{steps.configuration-env.outputs.configuration-data}}" >> $GITHUB_ENV
         else
           echo "  creating variables for unit-test"
@@ -385,4 +394,5 @@ runs:
         echo "  configuration_deployment_organization= " $configuration_deployment_organization
         echo "  configuration_deployment_host= " $configuration_deployment_host
         echo "  configuration_deployment_customlogger= " $configuration_deployment_customlogger
+        echo "  configuration_deployment_type= " $configuration_deployment_type
         echo "  configuration_env= " $configuration_env

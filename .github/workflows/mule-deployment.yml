@@ -20,7 +20,6 @@ on:
         description: Azure Credentials for login
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
-  MULE_APPLICATION_TYPE: mule-application-example.jar
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
@@ -173,7 +172,7 @@ jobs:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
           regex: false
-          file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.MULE_APPLICATION_TYPE }}"
+          file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_deployment_type }}.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - id: debug-workplace

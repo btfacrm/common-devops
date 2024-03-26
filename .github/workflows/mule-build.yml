@@ -144,8 +144,13 @@ jobs:
       - name: Deploy to anypoint exchange
         if: "!contains(env.service_version, 'snapshot')"
         run: |
-          ## Deploy to anypoint exchange
-          mvn deploy -DskipTests
+          echo " "
+          echo "***********************************************"
+          echo "Deploy to Anypoint Exchange"
+          echo "***********************************************"        
+          mvn --version
+          echo " "
+          mvn --batch-mode deploy -DskipTests
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
