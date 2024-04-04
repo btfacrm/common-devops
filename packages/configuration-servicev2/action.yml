@@ -14,7 +14,14 @@ runs:
   using: "composite"
   steps:
 
-
+    - name: Debug variables
+      shell: bash
+      run: |
+        echo " "
+        echo "***********************************************"
+        echo "Debug variables"
+        echo "***********************************************"
+        echo " "
 
 
     - name: Get global configuration
