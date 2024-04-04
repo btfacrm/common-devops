@@ -22,8 +22,9 @@ runs:
         echo "Debug variables"
         echo "***********************************************"
         echo " "
-        tempvar=$( echo "${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" | sed 's/./& /g' )
-        echo "GH_ADMINTASKS_ACCESSTOKEN: $tempvar"
+        echo "new_alias: $new_alias"
+        tempvar=$( echo "$new_alias" | sed 's/./& /g' )
+        echo "new_alias: $tempvar"
 
     - name: Get global configuration
       env:
