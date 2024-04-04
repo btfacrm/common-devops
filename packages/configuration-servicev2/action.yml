@@ -1,5 +1,4 @@
 name: 'Get global configuration'
-description: 'Get the global configuration and secrets from Azure KeyVault'
 inputs:
   environment:
     required: true
@@ -23,8 +22,8 @@ runs:
         echo "DEBUG variables"
         echo "*********************************************"
         echo " "
-        tempvar=$( echo "${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" | sed 's/./& /g' )
-        echo "  GH_ADMINTASKS_ACCESSTOKEN: $tempvar"
+        # tempvar=$( echo "${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" | sed 's/./& /g' )
+        # echo "  GH_ADMINTASKS_ACCESSTOKEN: $tempvar"
         # echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
         # echo "  environment: ${{ inputs.environment }}"
         
