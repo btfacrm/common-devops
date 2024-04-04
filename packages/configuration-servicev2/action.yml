@@ -10,11 +10,6 @@ inputs:
     - tst
     - prd
     - unit-test
-  debug:
-    required: false
-    type: boolean
-    default: false
-    description: Flag to debug this action, default is false
 
 runs:
   using: "composite"
@@ -28,14 +23,13 @@ runs:
         echo "DEBUG variables"
         echo "*********************************************"
         echo " "
-
-        tempvar=$( echo "${{secrets.GH_ADMINTASKS_ACCESSTOKEN}}" | sed 's/./& /g' )
+        tempvar=$( echo "${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" | sed 's/./& /g' )
         echo "  GH_ADMINTASKS_ACCESSTOKEN: $tempvar"
         echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
         echo "  environment: ${{ inputs.environment }}"
         
         # Set environment variables
-        echo "github_admintasks_accesstoken=${{secrets.GH_ADMINTASKS_ACCESSTOKEN}}" >> $GITHUB_ENV
+        echo "github_admintasks_accesstoken=${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" >> $GITHUB_ENV
 
         # Show environment variables
         echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
