@@ -1,0 +1,45 @@
+name: 'Get configuration file'
+description: 'Get the configuration file for the service defined in pom.xml'
+inputs:
+  file: 
+    required: true
+    description: File to download
+
+outputs:
+  configuration-data:
+    description: "The contents of the configuration file"
+    value: ${{ steps.configuration.outputs.configuration-data }}
+runs:
+  using: "composite"
+  steps:
+    
+    - id: configuration
+      name: Get configuration for the service 
+      shell: bash
+      run: |
+
+        echo " "
+        echo "*********************************************"
+        echo "Get configuration file"
+        echo "*********************************************"
+        echo " "
+
+        echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
+        echo "inputs.file: ${{ inputs.file }}"
+
+        # Get the configuration file from the github repository
+        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/${{ inputs.file }}"
+        echo "Getting the file: $urlconfigurationfile"
+        configurationdata=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
+
+        # Verify if configuration file was found
+        if [[ $configurationdata != *"Not Found"* ]]; then
+          echo "The file was found"
+          echo "$configurationdata" > ${{ inputs.file }}
+        else
+          echo "File not found, returning an empty file"
+          touch ${{ inputs.file }}
+        fi
+
+        echo "$configurationdata"
+        echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
