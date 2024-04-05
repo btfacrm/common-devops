@@ -23,23 +23,27 @@ runs:
         echo "Get configuration file"
         echo "*********************************************"
         echo " "
-
         echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
         echo "inputs.file: ${{ inputs.file }}"
+        listFiles="${{ inputs.file }}"
+        for readFile in $listFiles
+        do
+          echo "  "
+          echo "  Getting the file: $readFile"
+          urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$readFile"
+          echo "  URL of file: $urlconfigurationfile"
+          configurationdata=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
 
-        # Get the configuration file from the github repository
-        urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/${{ inputs.file }}"
-        echo "Getting the file: $urlconfigurationfile"
-        configurationdata=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
+          # Verify if configuration file was found
+          if [[ $configurationdata != *"Not Found"* ]]; then
+            echo "  The file was found"
+            echo "$configurationdata" > $readFile
+          else
+            echo "  File not found, returning an empty file"
+            touch $readFile
+          fi
 
-        # Verify if configuration file was found
-        if [[ $configurationdata != *"Not Found"* ]]; then
-          echo "The file was found"
-          echo "$configurationdata" > ${{ inputs.file }}
-        else
-          echo "File not found, returning an empty file"
-          touch ${{ inputs.file }}
-        fi
-
-        echo "$configurationdata"
-        echo "configuration-data=$(echo $pathdata)" >> $GITHUB_OUTPUT
+          echo "  Set the output of the action with the value of the file"
+          # echo "$configurationdata"
+          echo "configuration-data=$(echo $configurationdata)" >> $GITHUB_OUTPUT
+        done
