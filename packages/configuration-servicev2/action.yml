@@ -82,11 +82,9 @@ runs:
           fi
         }
         
-        echo "Test 1"
-        parse_yaml '.settingsX'
-        echo "Test 2"
+        parse_yaml '.settingsX'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
 
-        if [[ $yml != *"not found"* ]]; then echo "configuration_settings=$yml" >> $GITHUB_ENV; else echo $yml; exit 1; fi
+        # if [[ $yml != *"not found"* ]]; then echo "configuration_settings=$yml" >> $GITHUB_ENV; else echo $yml; exit 1; fi
         # echo "configuration_settings=$(parse_yaml '.settingsX')" >> $GITHUB_ENV
         # echo "configuration_skiptest=$(parse_yaml '.skiptests')" >> $GITHUB_ENV
         # echo "configuration_deployable=$(parse_yaml '.deployable')" >> $GITHUB_ENV
