@@ -84,10 +84,11 @@ runs:
             echo "  The yaml path was not found"; exit -1
           fi
           echo "    Value found: $pathdata"
+          return $pathdata
         }
         
         parse_yaml ".settings"
-        echo "configuration_settings=$pathdata" >> $GITHUB_ENV
+        echo "configuration_settings=$(parse_yaml '.settings')" >> $GITHUB_ENV
         parse_yaml ".skiptests"
         echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
         parse_yaml ".deployable"
