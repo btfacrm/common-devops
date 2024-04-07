@@ -79,7 +79,6 @@ runs:
         echo "  Getting main configuration"
         parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
         parse_yaml '.skiptests'; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
-        parse_yaml '.deployable'; echo "configuration_deployable=$pathdata" >> $GITHUB_ENV
         parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
         parse_yaml '.test-properties'; echo "configuration_test_properties=$pathdata" >> $GITHUB_ENV
 
