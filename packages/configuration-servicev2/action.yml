@@ -74,10 +74,9 @@ runs:
         echo " "
 
         function parse_yaml {
-          # echo "  Getting the configuration for the section: $1"
           pathdata=$(cat "$service_name.yml" | yq -r "$1")
           if [ "$pathdata" = "null" ] ; then
-            echo "  The yaml section was not found in the configuration file, section=$1"; exit -1
+            echo " The yaml section was not found in the configuration file, section=$1"; exit 1
           fi
           echo "$pathdata"
         }
