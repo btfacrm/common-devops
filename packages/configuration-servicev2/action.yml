@@ -56,18 +56,18 @@ runs:
     - name: Get configuration files
       uses:  btfacrm/common-devops/packages/get-file@main
       with:
-        file: "_global.yml $service_name.yml"
+        file: "$GLOBAL_CONFIGURATION $service_name.yml"
 
     - name: DEBUG show configuration files
       shell: bash
       run: |
-        cat ¨
+        cat "$GLOBAL_CONFIGURATION"
         cat "$service_name.yml"
 
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
       with:
-        paths: _global.yml
+        paths: "$GLOBAL_CONFIGURATION"
 
 
 
