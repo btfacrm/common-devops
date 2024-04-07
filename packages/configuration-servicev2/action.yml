@@ -78,8 +78,9 @@ runs:
         if [ "$pathdata" = "null" ] ; then
           echo "The yaml path was not found"; exit -1
         fi
-
-        echo "exporting variable: $section"; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
+        echo "exporting variable: $section"
+        echo "configuration_settings=$pathdata" >> $GITHUB_ENV
+        echo "test.."
 
     - name: DEBUG - Show variables
       shell: bash
