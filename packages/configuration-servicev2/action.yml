@@ -72,16 +72,38 @@ runs:
         echo "Get variables fronm the global configuration file  "
         echo "***************************************************"
         echo " "
-        section=".settings"
-        echo "Getting the configuration for the section: $section"
-        pathdata=$(cat "$service_name.yml" | yq -r "$section")
-        if [ "$pathdata" = "null" ] ; then
-          echo "The yaml path was not found"; exit -1
-        fi
-        echo "exporting variable: $section"
+        
+        # Initialize the value of the parsing yaml function
+        pathdata=""
+
+        function parse_yaml {
+          echo " "
+          echo "  Getting the configuration for the section: $1"
+          pathdata=$(cat "$service_name.yml" | yq -r "$1")
+          if [ "$pathdata" = "null" ] ; then
+            echo "The yaml path was not found"; exit -1
+          fi
+        }
+        
+        parse_yaml ".settings"
         echo "configuration_settings=$pathdata" >> $GITHUB_ENV
-        echo "configuration_settings=$pathdata"
-        echo "test.."
+
+
+        #section=".settings"
+        #echo "Getting the configuration for the section: $section"
+        #pathdata=$(cat "$service_name.yml" | yq -r "$section")
+        #if [ "$pathdata" = "null" ] ; then
+        #  echo "The yaml path was not found"; exit -1
+        #fi
+        #echo "exporting variable: $section"; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
+        #echo " "
+        #section=".skiptests"
+        #echo "Getting the configuration for the section: $section"
+        #pathdata=$(cat "$service_name.yml" | yq -r "$section")
+        #if [ "$pathdata" = "null" ] ; then
+        #  echo "The yaml path was not found"; exit -1
+        #fi
+        echo "exporting variable: $section"; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
 
     - name: DEBUG - Show variables
       shell: bash
