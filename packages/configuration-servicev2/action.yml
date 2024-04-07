@@ -77,12 +77,12 @@ runs:
           # echo "  Getting the configuration for the section: $1"
           pathdata=$(cat "$service_name.yml" | yq -r "$1")
           if [ "$pathdata" = "null" ] ; then
-            echo "  The yaml path was not found"; exit -1
+            echo "  The yaml section was not found in the configuration file, section=$1"; exit -1
           fi
           echo "$pathdata"
         }
         
-        echo "configuration_settings=$(parse_yaml '.settings')" >> $GITHUB_ENV
+        echo "configuration_settings=$(parse_yaml '.settingsX')" >> $GITHUB_ENV
         echo "configuration_skiptest=$(parse_yaml '.skiptests')" >> $GITHUB_ENV
         echo "configuration_deployable=$(parse_yaml '.deployable')" >> $GITHUB_ENV
 
