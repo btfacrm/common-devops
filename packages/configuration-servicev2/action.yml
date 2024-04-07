@@ -80,6 +80,7 @@ runs:
         fi
         echo "exporting variable: $section"
         echo "configuration_settings=$pathdata" >> $GITHUB_ENV
+        echo "configuration_settings=$pathdata"
         echo "test.."
 
     - name: DEBUG - Show variables
