@@ -56,7 +56,6 @@ jobs:
         uses: kanga333/variable-mapper@master
         with:
           key: "master"
-          # map: "${{steps.get-secrets-github.outputs.configuration-data}}"
           map: |
             {
               "master": {
@@ -213,7 +212,6 @@ jobs:
         uses: kanga333/variable-mapper@master
         with:
           key: "master"
-          # map: "${{steps.get-secrets-github.outputs.configuration-data}}"
           map: |
             {
               "master": {
@@ -374,7 +372,6 @@ jobs:
         uses: kanga333/variable-mapper@master
         with:
           key: "master"
-          # map: "${{steps.get-secrets-github.outputs.configuration-data}}"
           map: |
             {
               "master": {
@@ -564,7 +561,6 @@ jobs:
         uses: kanga333/variable-mapper@master
         with:
           key: "master"
-          # map: "${{steps.get-secrets-github.outputs.configuration-data}}"
           map: |
             {
               "master": {

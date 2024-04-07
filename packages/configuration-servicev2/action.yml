@@ -24,28 +24,23 @@ runs:
         echo "Getting service metadata from pom.xml "
         echo "**************************************"
         echo " "
-
         echo "Install XMLStarlet in Ubuntu"
         sudo apt-get install xmlstarlet --fix-missing        
         echo " "
-
         echo "xmlstarlet --version"
         xmlstarlet --version
         echo " "
-
         echo "Get info from pom.xml"
         servicename=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:name" pom.xml )
         serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
         servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
         serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
         echo " "
-
         echo "Create environment variables with pom data"
         echo "service_name=$servicename" >> $GITHUB_ENV
         echo "service_version=$serviceversion" >> $GITHUB_ENV
         echo "service_group=$servicegroup" >> $GITHUB_ENV
         echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
-        echo " "
         echo " "
         echo "Variables generated based on pom.xml:"
         echo "  service_name= "$servicename
@@ -72,7 +67,6 @@ runs:
         echo "Get variables from the service configuration file "
         echo "**************************************************"
         echo " "
-    
         pathdata=""
         function parse_yaml {
           pathdata=$(cat "$service_name.yml" | yq -r "$1")
@@ -82,11 +76,23 @@ runs:
           fi
         }
         
+        echo "  Getting main configuration"
         parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
         parse_yaml '.skiptests'; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
         parse_yaml '.deployable'; echo "configuration_deployable=$pathdata" >> $GITHUB_ENV
         parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
+        parse_yaml '.test-properties'; echo "configuration_test_properties=$pathdata" >> $GITHUB_ENV
 
+        if [ "${{ inputs.environment }}" != "buld" ] ; then
+          echo "  Getting ${{ inputs.environment }} configuration"
+          parse_yaml ".${{ inputs.environment }}.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.deployment.type"; echo "configuration_deployment_type=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.cloudhub"; echo "configuration_cloudhub=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.env"; echo "configuration_env=$pathdata" >> $GITHUB_ENV
+        fi        
 
     - name: DEBUG - Show variables
       shell: bash
@@ -97,15 +103,15 @@ runs:
         echo "*********************************************"
         echo " "
         echo "Configuration variables:"
-        echo "  configuration_settings= " $configuration_settings
-        echo "  configuration_skiptest= " $configuration_skiptest          
-        echo "  configuration_environments= " $configuration_environments
-        echo "  configuration_deployable= " $configuration_deployable
-        echo "  configuration_cloudhub= " $configuration_cloudhub
-        echo "  configuration_properties= " $configuration_properties
-        echo "  configuration_deployment_name= " $configuration_deployment_name
-        echo "  configuration_deployment_organization= " $configuration_deployment_organization
-        echo "  configuration_deployment_host= " $configuration_deployment_host
-        echo "  configuration_deployment_customlogger= " $configuration_deployment_customlogger
-        echo "  configuration_deployment_type= " $configuration_deployment_type
-        echo "  configuration_env= " $configuration_env
+        echo "  configuration_settings= "$configuration_settings
+        echo "  configuration_skiptest= "$configuration_skiptest          
+        echo "  configuration_environments= "$configuration_environments
+        echo "  configuration_deployable= "$configuration_deployable
+        echo "  configuration_test_properties= "$configuration_test_properties
+        echo "  configuration_deployment_name= "$configuration_deployment_name
+        echo "  configuration_deployment_organization= "$configuration_deployment_organization
+        echo "  configuration_deployment_host= "$configuration_deployment_host
+        echo "  configuration_deployment_customlogger= "$configuration_deployment_customlogger
+        echo "  configuration_deployment_type= "$configuration_deployment_type
+        echo "  configuration_cloudhub= "$configuration_cloudhub
+        echo "  configuration_env= "$configuration_env
