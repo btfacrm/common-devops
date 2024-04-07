@@ -72,9 +72,6 @@ runs:
         echo "Get variables fronm the global configuration file  "
         echo "***************************************************"
         echo " "
-        
-        # Initialize the value of the parsing yaml function
-        pathdata=""
 
         function parse_yaml {
           # echo "  Getting the configuration for the section: $1"
@@ -85,12 +82,9 @@ runs:
           echo "$pathdata"
         }
         
-        # parse_yaml ".settings"
         echo "configuration_settings=$(parse_yaml '.settings')" >> $GITHUB_ENV
-        # parse_yaml ".skiptests"
-        # echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
-        # parse_yaml ".deployable"
-        # echo "configuration_deployable=$pathdata" >> $GITHUB_ENV
+        echo "configuration_skiptest=$(parse_yaml '.skiptests')" >> $GITHUB_ENV
+        echo "configuration_deployable=$(parse_yaml '.deployable')" >> $GITHUB_ENV
 
     - name: DEBUG - Show variables
       shell: bash
