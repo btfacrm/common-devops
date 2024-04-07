@@ -78,4 +78,14 @@ runs:
         if [ "$pathdata" = "null" ] ; then
           echo "The yaml path was not found"; exit -1
         fi
+        echo "configuration_settings=" >> $GITHUB_ENV
 
+    - name: DEBUG - Show variables
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"      
+        echo "DEBUG variables"
+        echo "*********************************************"
+        echo " "
+        echo "configuration_settings: $configuration_settings"
