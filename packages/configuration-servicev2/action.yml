@@ -77,7 +77,7 @@ runs:
           pathdata=$(cat "$service_name.yml" | yq -r "$1")
           if [ "$pathdata" = "null" ] ; then
             echo " The yaml section was not found in the configuration file, section=$1"
-            return 1 2>/dev/null
+            #return 1 2>/dev/null
             exit 1
           fi
           echo "$pathdata"
