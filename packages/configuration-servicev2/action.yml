@@ -81,29 +81,17 @@ runs:
           echo "  Getting the configuration for the section: $1"
           pathdata=$(cat "$service_name.yml" | yq -r "$1")
           if [ "$pathdata" = "null" ] ; then
-            echo "The yaml path was not found"; exit -1
+            echo "  The yaml path was not found"; exit -1
           fi
+          echo "    Value found: $pathdata"
         }
         
         parse_yaml ".settings"
         echo "configuration_settings=$pathdata" >> $GITHUB_ENV
-
-
-        #section=".settings"
-        #echo "Getting the configuration for the section: $section"
-        #pathdata=$(cat "$service_name.yml" | yq -r "$section")
-        #if [ "$pathdata" = "null" ] ; then
-        #  echo "The yaml path was not found"; exit -1
-        #fi
-        #echo "exporting variable: $section"; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
-        #echo " "
-        #section=".skiptests"
-        #echo "Getting the configuration for the section: $section"
-        #pathdata=$(cat "$service_name.yml" | yq -r "$section")
-        #if [ "$pathdata" = "null" ] ; then
-        #  echo "The yaml path was not found"; exit -1
-        #fi
-        echo "exporting variable: $section"; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
+        parse_yaml ".skiptests"
+        echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
+        parse_yaml ".deployable"
+        echo "configuration_deployable=$pathdata" >> $GITHUB_ENV
 
     - name: DEBUG - Show variables
       shell: bash
@@ -113,4 +101,16 @@ runs:
         echo "DEBUG variables"
         echo "*********************************************"
         echo " "
-        echo "configuration_settings: $configuration_settings"
+        echo "Configuration variables:"
+        echo "  configuration_settings= " $configuration_settings
+        echo "  configuration_skiptest= " $configuration_skiptest          
+        echo "  configuration_unittest= " $configuration_unittest
+        echo "  configuration_deployable= " $configuration_deployable
+        echo "  configuration_cloudhub= " $configuration_cloudhub
+        echo "  configuration_properties= " $configuration_properties
+        echo "  configuration_deployment_name= " $configuration_deployment_name
+        echo "  configuration_deployment_organization= " $configuration_deployment_organization
+        echo "  configuration_deployment_host= " $configuration_deployment_host
+        echo "  configuration_deployment_customlogger= " $configuration_deployment_customlogger
+        echo "  configuration_deployment_type= " $configuration_deployment_type
+        echo "  configuration_env= " $configuration_env
