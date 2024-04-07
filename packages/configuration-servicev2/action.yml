@@ -68,9 +68,9 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "***************************************************"
-        echo "Get variables fronm the global configuration file  "
-        echo "***************************************************"
+        echo "**************************************************"
+        echo "Get variables from the service configuration file "
+        echo "**************************************************"
         echo " "
     
         pathdata=""
@@ -85,6 +85,8 @@ runs:
         parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
         parse_yaml '.skiptests'; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
         parse_yaml '.deployable'; echo "configuration_deployable=$pathdata" >> $GITHUB_ENV
+        parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
+
 
     - name: DEBUG - Show variables
       shell: bash
@@ -97,7 +99,7 @@ runs:
         echo "Configuration variables:"
         echo "  configuration_settings= " $configuration_settings
         echo "  configuration_skiptest= " $configuration_skiptest          
-        echo "  configuration_unittest= " $configuration_unittest
+        echo "  configuration_environments= " $configuration_environments
         echo "  configuration_deployable= " $configuration_deployable
         echo "  configuration_cloudhub= " $configuration_cloudhub
         echo "  configuration_properties= " $configuration_properties
