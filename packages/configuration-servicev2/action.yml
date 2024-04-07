@@ -74,7 +74,7 @@ runs:
         echo " "
         section=".settings"
         echo "Getting the configuration for the section: $section"
-        pathdata=$(cat "$GLOBAL_CONFIGURATION" | yq -r "${{ inputs.yaml-path}}")
+        pathdata=$(cat "$service_name.yml" | yq -r "$section")
         if [ "$pathdata" = "null" ] ; then
           echo "The yaml path was not found"; exit -1
         fi
