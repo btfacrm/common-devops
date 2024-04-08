@@ -168,6 +168,7 @@ jobs:
           # Environment list to an array
           read -a array <<< "$configuration_environments"
 
+          # Find the current environment in the list
           currentIndex=-1
           for i in "${!array[@]}"; do
             if [[ "${array[$i]}" = "$deployment_environment" ]]; then
@@ -180,25 +181,20 @@ jobs:
             exit 1
           fi
 
-          echo "test1"
+          # Find the next environment for deployment
           sizearray=${#array[@]}
-          echo "sizearray: $sizearray"
-          echo "test2"
           nextindex=$(($currentIndex + 1))
-          echo "test2-5"
 
           if (( $sizearray > $nextindex )); then
-            echo "test3-1"
             nextenvironment=${array[$nextindex]}
-            echo "test3-2"
 
-            echo "  Environment to deploy the application: $nextenvironment"
+            echo "  Next environment to deploy the application: $nextenvironment"
             gh -R "${{ github.repository }}" issue create \
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
                 -a "${{ env.github_deployeruser }}" \
                 -b "The deployment job triggered this action" \
                 -l "forward"
           else
-            echo "No more environments to deploy"
+            echo "  No more environments to deploy"
           fi
 
