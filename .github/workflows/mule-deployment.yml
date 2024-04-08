@@ -32,7 +32,7 @@ jobs:
       github.actor == 'jpontdia' ||
       github.actor == 'GitHubActions' ||
       github.actor == 'github-actions'
-    name: verify
+    name: CloudHub
     runs-on: ubuntu-latest
     outputs:
       # Indicates if the service is deployable
