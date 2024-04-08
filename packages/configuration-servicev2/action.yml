@@ -54,6 +54,18 @@ runs:
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
 
+    - name: DEBUG - Cat global.yml
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"      
+        echo "DEBUG variables"
+        echo "*********************************************"
+        echo " "
+        cat $GLOBAL_CONFIGURATION
+        echo " "
+        echo " "
+        
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
       with:
