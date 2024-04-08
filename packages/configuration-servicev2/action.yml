@@ -96,7 +96,7 @@ runs:
         
         echo "  Getting main configuration"
         parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
-        parse_yaml '.skiptests'; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
+        parse_yaml '.skiptests'; echo "configuration_skiptests=$pathdata" >> $GITHUB_ENV
         parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
 
         parse_yaml '.test-properties';
@@ -163,7 +163,7 @@ runs:
         echo " "
         echo "Configuration variables:"
         echo "  configuration_settings= "$configuration_settings
-        echo "  configuration_skiptest= "$configuration_skiptest          
+        echo "  configuration_skiptests= "$configuration_skiptests          
         echo "  configuration_environments= "$configuration_environments
         echo "  configuration_deployable= "$configuration_deployable
         echo "  configuration_test_properties= $configuration_test_properties"
@@ -175,7 +175,3 @@ runs:
         echo "  configuration_cloudhub= $configuration_cloudhub"
         echo "BAT variables:"
         echo "  salesforcesapi= "$salesforcesapi
-        # echo " "
-        # substitution_cloudhub=$(eval "echo $configuration_cloudhub")
-        # echo "substitution_cloudhub = $substitution_cloudhub"
-        # echo "substitution_cloudhub = $substitution_cloudhub"
