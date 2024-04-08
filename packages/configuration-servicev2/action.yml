@@ -70,15 +70,13 @@ runs:
       uses: zlatko-ms/envarfiles@main
       with:
         paths: ${{ env.GLOBAL_CONFIGURATION }}
-        #paths: _global.yml  # works !!
-        #paths: "$GLOBAL_CONFIGURATION"
 
     - name: DEBUG - Show global variables
       shell: bash
       run: |
         echo " "
         echo "*********************************************"      
-        echo "DEBUG variables"
+        echo "DEBUG variables from global.yml"
         echo "*********************************************"
         echo " "
         echo "Configuration variables:"
@@ -87,6 +85,9 @@ runs:
         echo "  github_gist_path= $github_gist_path"
         echo "  salesforcesapi_dev= $salesforcesapi_dev"
         echo "  salesforcesapi_prd= $salesforcesapi_prd"
+        echo "  testvar1= $testvar1"
+        echo "  testvar2= $testvar2"
+
     
     - name: Get configuration parameters for the service
       shell: bash
