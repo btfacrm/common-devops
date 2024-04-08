@@ -5,18 +5,11 @@
 name: Build
 on:
   workflow_call:
-    inputs:
-      keyvault-key:
-        required: true
-        description: Access key to KeyVault
-        type: string
-    secrets:
-      azure-credentials:
-        required: true
-        description: Azure Credentials for login
+
 env:
   DEFAULT_SETTINGS_XML: settings.xml
   CONFIGURATIONS_REPOSITORY: common-configurations
+  GLOBAL_CONFIGURATION: _global.yml
   
 jobs:
 
@@ -34,11 +27,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set github token variable
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Set github token variable "
+          echo "***********************************************"
+          echo " "
+          echo "github_admintasks_accesstoken=${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" >> $GITHUB_ENV
+          
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
         with:
           key: "master"
-          # map: "${{steps.get-secrets-github.outputs.configuration-data}}"
           map: |
             {
               "master": {
