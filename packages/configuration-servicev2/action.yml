@@ -59,17 +59,18 @@ runs:
       run: |
         echo " "
         echo "*********************************************"      
-        echo "DEBUG variables"
+        echo "CAT global.yml"
         echo "*********************************************"
         echo " "
         cat $GLOBAL_CONFIGURATION
         echo " "
         echo " "
-        
+
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
       with:
-        paths: "$GLOBAL_CONFIGURATION"
+        paths: _global.yml
+        #paths: "$GLOBAL_CONFIGURATION"
 
     - name: DEBUG - Show global variables
       shell: bash
