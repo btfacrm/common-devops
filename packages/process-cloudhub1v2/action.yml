@@ -16,7 +16,8 @@ runs:
   - name: Install NodeJs
     uses: actions/setup-node@v3
     with:
-      node-version: 18
+      node-version: 20
+      cache: 'npm'
 
   - name: Install Anypoint CLI
     shell: bash
@@ -36,12 +37,12 @@ runs:
       echo " "
 
   - id: deployment
-    name: Deploy the service to the cloud
+    name: Deploy the service to CloudHub1
     shell: bash
     run: |
       echo " "
       echo "***************************************"
-      echo "Deploy the service to the cloud"
+      echo "Deploy the service to CloudHub1"
       echo "***************************************"
       echo " "
       # Environment variables:
