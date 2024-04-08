@@ -103,7 +103,7 @@ runs:
         substitution_test_properties=$(eval "echo $pathdata")
         echo "configuration_test_properties=$substitution_test_properties" >> $GITHUB_ENV
 
-        if [ "${{ inputs.environment }}" != "buld" ] ; then
+        if [ "${{ inputs.environment }}" != "build" ] ; then
           echo "  Getting ${{ inputs.environment }} configuration"
           parse_yaml ".${{ inputs.environment }}.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
           parse_yaml ".${{ inputs.environment }}.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
@@ -115,7 +115,6 @@ runs:
           parse_yaml ".${{ inputs.environment }}.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
-
         fi        
 
     - name: Generate environment variables for BAT
