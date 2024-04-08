@@ -118,25 +118,23 @@ jobs:
       - name: Get workflow metadata
         uses: btfacrm/common-devops/packages/configuration-issuemanagementv2@main
 
-      - id: verify-deployment
-        name: Verify if asset has the deployment configuration
+      - name: Get jar file
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: '${{ github.repository }}'
+          version: 'tags/${{ env.deployment_version }}'
+          regex: false
+          file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Debug show root files
+        id: debug-workplace
         shell: bash
         run: |
           echo " "
-          echo "*****************************************************"
-          echo "Verify deployment to ${{ env.deployment_environment }} "
-          echo "*****************************************************"
-          echo " "      
-          echo "dev cloudhub: ${{ env.configuration_cloudhub }}"
-          if [ "${{ env.configuration_cloudhub }}" != "" ] ; then
-            echo "deployment=true" >> $GITHUB_OUTPUT
-            echo "deployment-env=${{ env.deployment_environment }}" >> $GITHUB_OUTPUT
-            echo "The service has the configuration to be deployed in ${{ env.deployment_environment }} environment"
-            echo
-          else
-            echo "deployment=false" >> $GITHUB_OUTPUT
-            issue_message="${{env.MESSAGE_ASSET_NOT_CONFIGURED}}"
-            echo "$issue_message"
-            echo "issue_message=$issue_message" >> $GITHUB_ENV
-          fi
+          echo "***************************************"
+          echo "Debug show root files"
+          echo "***************************************"
+          echo " "
+          ls -l
 
