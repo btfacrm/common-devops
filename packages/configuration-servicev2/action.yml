@@ -90,8 +90,43 @@ runs:
           parse_yaml ".${{ inputs.environment }}.deployment.type"; echo "configuration_deployment_type=$pathdata" >> $GITHUB_ENV
           parse_yaml ".${{ inputs.environment }}.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
           parse_yaml ".${{ inputs.environment }}.cloudhub"; echo "configuration_cloudhub=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ inputs.environment }}.env"; echo "configuration_env=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ inputs.environment }}.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
         fi        
+
+    - name: Generate environment variables for BAT
+      id: generate-service-env-variables
+      if: ${{ inputs.environment != 'build' }}
+      shell: bash
+      run: |
+        echo " "
+        echo "***********************************************"
+        echo "Generate environment variables for BAT         "
+        echo "***********************************************"
+        echo " "
+
+        if [ "$configuration_bat" = "null" ] || [ "$configuration_bat" = "" ] ; then
+          echo "  There are no environment variables for bat!"
+        else
+          service_configuration_lines=$( echo $configuration_bat | tr ' ' '\n' )
+          echo -e "  Configuration formated:\n$service_configuration_lines "
+          echo " "
+
+          echo "  Variables found: "
+          echo "$service_configuration_lines" | while read p; do
+
+            # Get variable and value
+            line=$(echo "$p")
+            name="$(cut -d'=' -f1 <<<$line)"
+            value="$(cut -d'=' -f2 <<< $line)"
+            echo "    - name: "$name
+            echo "      value: "$value
+
+            # Override the value with a possible environment variable
+            value_fromvariable=$(eval "echo $value")
+            echo "      new value: "$value_fromvariable
+            echo "$name=$value_fromvariable" >> $GITHUB_ENV
+          done          
+        fi
 
     - name: DEBUG - Show variables
       shell: bash
