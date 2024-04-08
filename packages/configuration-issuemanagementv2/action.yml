@@ -5,13 +5,11 @@ runs:
   using: "composite"
   steps:
     - name: Get the release metadata
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}      
       shell: bash
       run: |
         echo " "
         echo "***********************************************"
-        echo "Get the workflow metadata "
+        echo "Get the release metadata "
         echo "***********************************************"
         echo " "
         echo "  Values from github context: "

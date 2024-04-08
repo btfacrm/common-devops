@@ -40,6 +40,17 @@ jobs:
 
     steps:
 
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo " "
+          echo "*****************************************************"
+          echo "Dump GitHub context "
+          echo "*****************************************************"
+          echo " "
+          echo "$GITHUB_CONTEXT"
+
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
         with:
