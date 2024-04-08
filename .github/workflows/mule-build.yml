@@ -100,8 +100,7 @@ jobs:
       - name: Get global configuration
         uses: btfacrm/common-devops/packages/configuration-servicev2@main
         with:
-          environment: unit-test
-          debug: false
+          environment: build
 
       - id: issue-create
         name: Create a deployment issue
