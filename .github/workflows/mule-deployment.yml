@@ -177,7 +177,7 @@ jobs:
           echo "index: $currentIndex"
           echo "size: $sizearray"
 
-          if [[ $sizearray -gt $currentIndex + 1 ]]; then
+          if (( $sizearray > $currentIndex + 1 )); then
             echo "next environtment: ${array[$currentIndex + 1]}"
           else
             echo "No more environments to deploy"
