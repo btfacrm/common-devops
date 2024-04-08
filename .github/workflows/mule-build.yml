@@ -119,11 +119,11 @@ jobs:
           echo "  Create issue for deployment in the first environment: $configuration_environments"
 
           # Environment list to an array
-          read -a environmentarray <<< "$configuration_environments"
+          read -a array <<< "$configuration_environments"
           echo "test"
-          echo "$environmentarray"
+          echo "$array"
           echo "test"
-          echo "  Environment to deploy the application: ${environmentarray[0]}
+          echo "  Environment to deploy the application: ${array[0]}"
           #gh -R "${{ github.repository }}" issue create \
           #    -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
           #    -a "${{ env.github_deployeruser }}" \
