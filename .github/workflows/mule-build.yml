@@ -121,12 +121,53 @@ jobs:
           else
             echo "  Create tag $service_version for the respository"
           fi
+          echo " "
           
       - name: Install Java JDK for Mulesoft Applications
         uses: btfacrm/common-devops/packages/install-java@main
         with:
           github-configurations-accesstoken: $github_admintasks_accesstoken
           default-settings-xml: $configurations_settings
+
+      - name: Setup Anypoint Exchange directories
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Setup Anypoint Exchange directories"
+          echo "***********************************************"
+          echo " "
+          echo "  Configuring the directory for Anypoint Exchange documentation"
+          if [ -d "exchange-docs" ]; then
+            echo "    Directory exchange-docs exists and will not be overriden with README.md" 
+          else
+            echo "    Creating directory 'exchange-doc' with home.md from README.md"
+            mkdir -p exchange-docs
+            mkdir -p exchange-docs/docs
+            cp -Rfpv README.md exchange-docs/home.md
+            cp -Rfpv docs/*.* exchange-docs/docs 
+          fi
+          echo " "
+        
+      - name: Compile code    
+        run: mvn --batch-mode compile
+  
+      - name: Run test cases and package
+        id: run-test-cases
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Run test cases and package"
+          echo "***********************************************"
+          echo " "
+          skiptests=" "
+          if [[ "${{env.configuration_skiptests}}" == "true" ]]; then
+            skiptests="-DskipTests"
+            echo "  Tests will be skipped"
+          else
+            echo "  The application will be tested"
+          fi
+          mvn --batch-mode $skiptests package $configuration_test_properties
 
       - id: issue-create
         name: Create a deployment issue
