@@ -168,3 +168,6 @@ runs:
         echo "  configuration_cloudhub= $configuration_cloudhub"
         echo "BAT variables:"
         echo "  salesforcesapi= "$salesforcesapi
+        echo " "
+        substitution_cloudhub = $( echo "$configuration_cloudhub" )
+        echo "substitution_cloudhub = $substitution_cloudhub"
