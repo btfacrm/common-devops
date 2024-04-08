@@ -69,7 +69,8 @@ runs:
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
       with:
-        paths: _global.yml
+        paths: ${{ env.GLOBAL_CONFIGURATION }}
+        #paths: _global.yml  # works !!
         #paths: "$GLOBAL_CONFIGURATION"
 
     - name: DEBUG - Show global variables
