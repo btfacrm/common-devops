@@ -168,8 +168,19 @@ jobs:
           fi
           mvn --batch-mode $skiptests package $configuration_test_properties
 
-      - id: issue-create
-        name: Create a deployment issue
+      - name: Summary - Test
+        uses: btfacrm/common-devops/packages/summary-junit@main
+        with:
+          badge-label: Unit test
+          badge-suffix: ut
+          path-report: 'target/surefire-reports/*.xml'
+          path-directoryreports: 'target/surefire-reports/*'
+
+      - name: Summary - Code Coverage
+        uses: btfacrm/common-devops/packages/summary-codecoverage@main
+      
+      - name: Create a deployment issue
+        id: issue-create  
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
           GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
