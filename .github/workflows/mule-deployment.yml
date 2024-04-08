@@ -182,6 +182,7 @@ jobs:
 
           echo "test1"
           sizearray=${#array[@]}
+          echo "sizearray: $sizearray"
           echo "test2"
           nextindex=$currentIndex + 1
           echo "test2-5"
