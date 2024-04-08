@@ -18,7 +18,7 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "Configuration for environment: ${{ inputs.environment }} "
+        echo "Configuration for environment: ${{ inputs.environment }}"
         echo " "
         echo "**************************************"
         echo "Getting service metadata from pom.xml "
@@ -53,18 +53,6 @@ runs:
       uses: btfacrm/common-devops/packages/get-file@main
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
-
-    - name: DEBUG - Cat global.yml
-      shell: bash
-      run: |
-        echo " "
-        echo "*********************************************"      
-        echo "CAT global.yml"
-        echo "*********************************************"
-        echo " "
-        cat $GLOBAL_CONFIGURATION
-        echo " "
-        echo " "
 
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
@@ -162,9 +150,9 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "*********************************************"      
-        echo "DEBUG variables"
-        echo "*********************************************"
+        echo "*********************************************************"      
+        echo "DEBUG show variables for service in environment: ${{ inputs.environment }}"
+        echo "*********************************************************"
         echo " "
         echo "Configuration variables:"
         echo "  configuration_settings= "$configuration_settings
@@ -178,4 +166,5 @@ runs:
         echo "  configuration_deployment_customlogger= "$configuration_deployment_customlogger
         echo "  configuration_deployment_type= "$configuration_deployment_type
         echo "  configuration_cloudhub= "$configuration_cloudhub
-        echo "  configuration_env= "$configuration_env
+        echo "BAT variables:"
+        echo "  salesforcesapi= "$salesforcesapi
