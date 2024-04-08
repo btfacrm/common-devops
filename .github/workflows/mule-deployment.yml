@@ -169,7 +169,7 @@ jobs:
           currentIndex=-1
           for i in "${!array[@]}"; do
             if [[ "${array[$i]}" = "$deployment_environment" ]]; then
-              currentIndex=i;
+              currentIndex=$i;
             fi
           done
           sizearray=${#array[@]}
@@ -182,7 +182,7 @@ jobs:
           else
             echo "No more environments to deploy"
           fi
-          
+
           # Environment list to an array
           #read -a array <<< "$configuration_environments"
           #echo "  Environment to deploy the application: ${array[0]}"
