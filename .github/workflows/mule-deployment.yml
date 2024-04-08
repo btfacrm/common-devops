@@ -180,12 +180,18 @@ jobs:
             exit 1
           fi
 
+          echo "test1"
           sizearray=${#array[@]}
+          echo "test2"
 
           if (( $sizearray > $currentIndex + 1 )); then
-            echo "  Environment to deploy the application: ${array[currentIndex + 1]"
+            echo "test3-1"
+            nextenvironment=${array[$currentIndex + 1]
+            echo "test3-2"
+
+            echo "  Environment to deploy the application: $nextenvironment"
             gh -R "${{ github.repository }}" issue create \
-                -t "Deployment ${array[currentIndex + 1] ${{ env.service_name }} ${{ env.service_version }}" \
+                -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
                 -a "${{ env.github_deployeruser }}" \
                 -b "The deployment job triggered this action" \
                 -l "forward"
