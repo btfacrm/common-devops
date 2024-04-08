@@ -98,7 +98,10 @@ runs:
         parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
         parse_yaml '.skiptests'; echo "configuration_skiptest=$pathdata" >> $GITHUB_ENV
         parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
-        parse_yaml '.test-properties'; echo "configuration_test_properties=$pathdata" >> $GITHUB_ENV
+
+        parse_yaml '.test-properties';
+        substitution_test_properties=$(eval "echo $pathdata")
+        echo "configuration_test_properties=$substitution_test_properties" >> $GITHUB_ENV
 
         if [ "${{ inputs.environment }}" != "buld" ] ; then
           echo "  Getting ${{ inputs.environment }} configuration"
@@ -107,8 +110,12 @@ runs:
           parse_yaml ".${{ inputs.environment }}.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
           parse_yaml ".${{ inputs.environment }}.deployment.type"; echo "configuration_deployment_type=$pathdata" >> $GITHUB_ENV
           parse_yaml ".${{ inputs.environment }}.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ inputs.environment }}.cloudhub"; echo "configuration_cloudhub=$pathdata" >> $GITHUB_ENV
           parse_yaml ".${{ inputs.environment }}.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
+          
+          parse_yaml ".${{ inputs.environment }}.cloudhub";
+          substitution_cloudhub=$(eval "echo $pathdata")
+          echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
+
         fi        
 
     - name: Generate environment variables for BAT
@@ -168,6 +175,7 @@ runs:
         echo "  configuration_cloudhub= $configuration_cloudhub"
         echo "BAT variables:"
         echo "  salesforcesapi= "$salesforcesapi
-        echo " "
-        substitution_cloudhub=$(eval "echo $configuration_cloudhub")
-        echo "substitution_cloudhub = $substitution_cloudhub"
+        # echo " "
+        # substitution_cloudhub=$(eval "echo $configuration_cloudhub")
+        # echo "substitution_cloudhub = $substitution_cloudhub"
+        # echo "substitution_cloudhub = $substitution_cloudhub"
