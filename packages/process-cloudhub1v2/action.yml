@@ -1,0 +1,235 @@
+name: 'Deploys a service to Cloudhub/GovCloud'
+description: 'Deploys a service to Cloudhub/GovCloud'
+inputs:
+  deployment-env:
+    required: true
+    description: Deployment environment for the service
+outputs:
+  outcome:
+    description: "The result of the deployment: sucess, failure"
+    value: ${{ steps.deployment.outputs.outcome }}
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Install NodeJs
+    uses: actions/setup-node@v3
+    with:
+      node-version: 18
+
+  - name: Install Anypoint CLI
+    shell: bash
+    run: |
+      echo " "
+      echo "***************************************"
+      echo "Install Anypoint CLI"
+      echo "***************************************"
+      echo " "
+      echo "Install anypoint-cli-v4..."
+      npm install -g anypoint-cli-v4
+      echo "anypoint-cli-v4 --version: "
+      anypoint-cli-v4 --version
+      echo " "
+      echo "Installing cloudhub-plugin"
+      anypoint-cli-v4 plugins:install anypoint-cli-cloudhub-plugin
+      echo " "
+
+  - id: deployment
+    name: Deploy the service to the cloud
+    shell: bash
+    run: |
+      echo " "
+      echo "***************************************"
+      echo "Deploy the service to the cloud"
+      echo "***************************************"
+      echo " "
+      # Environment variables:
+      # - configuration_deployment_name
+      # - configuration_deployment_organization
+      # - configuration_deployment_host
+      # - configuration_cloudhub
+      # - cicd_connectedapp_clientid
+      # - cicd_connectedapp_secret
+
+      echo "Assigning variables to the script"
+      deploymentenvironment="${{ inputs.deployment-env }}"
+
+      # Get the jar file
+      jar=$(ls *.jar)
+      echo "Jar file: $jar"
+
+      start=$(date +%s)
+      echo " "
+      echo "Deployment process start. "
+      echo "   anypoint-cli-v4: $(anypoint-cli-v4 --version)"
+
+      QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
+                  --client_id $cicd_connectedapp_clientid \
+                  --client_secret $cicd_connectedapp_secret \
+                  --environment $deploymentenvironment \
+                  --organization $configuration_deployment_organization \
+                  --host $configuration_deployment_host \
+                  --output json $configuration_deployment_name"
+
+      # Get the current status of the service
+      echo " "
+      echo "Getting the current status for the service"
+      echo "  Query command: $QUERY_STATUS"
+
+      # Get the current status of the service 
+      DEPLOYMENT_INFO=$($QUERY_STATUS || true)
+      echo " "
+      echo "Current status: $DEPLOYMENT_INFO"
+
+      echo " "
+      echo "Querying variables from deployment result"
+      STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
+      UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
+
+      echo " "
+      echo "Result"
+      echo "  Service: $configuration_deployment_name status: $STATUS, updateStatus: $UPDATE_STATUS"
+      echo " "
+
+      # Verify if the service is currently in an inconsistent state
+      if [ "$STATUS" = "UNDEPLOYED" ]; then
+        echo "The service is in an inconsistent state: UNDEPLOYED; please delete the service"
+        echo "outcome=failure" >> $GITHUB_OUTPUT
+        exit 1 # terminate and indicate error 
+      fi
+
+      if [ "$STATUS" = "DEPLOYING" ]; then
+        echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
+        echo "outcome=failure" >> $GITHUB_OUTPUT
+        exit 1 # terminate and indicate error 
+      fi
+
+      # Verify if deployment is for an new application of update an existing one
+      if [ "$STATUS" != "" ]; then
+        operation="modify"
+      else
+        operation="deploy"
+      fi
+
+      # Execute deployment of the service
+      echo ""
+      echo "Based on the current status of the service, the deployment operation will be: $operation"
+      end=$(date +%s)
+      echo "  Elapsed time: $(($end-$start)) seconds"
+      echo " "
+      echo "Preparing deployment command...."
+      CREATEUPDATE_APP="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
+      --client_id $cicd_connectedapp_clientid \
+      --client_secret $cicd_connectedapp_secret \
+      --organization $configuration_deployment_organization \
+      --host $configuration_deployment_host \
+      --environment $deploymentenvironment \
+      $configuration_cloudhub --output json $configuration_deployment_name $jar"
+      echo "  Deployment command: $CREATEUPDATE_APP"
+      echo " "
+      echo "Executing deployment...."
+
+      $CREATEUPDATE_APP
+      end=$(date +%s)
+      echo " "
+      echo "Deployment finished, verifying the deployment...."
+      echo "  Elapsed time: $(($end-$start)) seconds" 
+      echo " "
+
+      # Process to verify if the service was deployed correctly
+      echo " "
+      echo "**********************************"
+      echo "Deployment query cycle"
+      echo "**********************************"
+      echo " "
+      echo "The process of querying deployment starts"      
+      iteration=1
+      limit=70
+      while true
+      do 
+        sleep 5
+
+        # Get the current status of the service
+        echo " " 
+        echo "Getting deployment status"
+        DEPLOYMENT_INFO=$($QUERY_STATUS)
+        # echo "Quering status: $DEPLOYMENT_INFO"
+        STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
+        UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
+        echo "Service: $configuration_deployment_name, operation: $operation, status: $STATUS, updateStatus: $UPDATE_STATUS"
+
+        end=$(date +%s)
+        echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
+
+        if [ "$operation" = "deploy" ]; then 
+            # Create service
+
+            if [ "$STATUS" = "STARTED" ] || [ $iteration -eq $limit ]; then
+              break # Abandon the while loop.
+            fi
+        else
+            # Update service
+            if [ "$UPDATE_STATUS" = "null" ] || [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ] || [ $iteration -eq $limit ]; then
+              break # Abandon the while loop.
+            fi
+        fi
+
+        echo "  Waiting for next query status iteration"
+        iteration=$(( $iteration + 1 ))
+      done
+
+      # Verify if service was successfully deployed 
+      echo " "
+      echo "**********************************"
+      echo "Analyse the deployment process"
+      echo "**********************************"
+      echo " "
+      echo "The deployment process finished, lets analyse the result based on the last deployment status"
+      if [ "$operation" = "deploy" ]; then
+
+        # Create new service
+        if [ "$STATUS" != "STARTED" ]; then
+          echo "  Error: The service was not deployed in the expected time, review logs"
+          echo "    example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
+          echo "  The expected iterations were 44 but the proccess reached the limit: $limit"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          exit 1 # terminate and indicate error 
+          
+        else 
+          echo "  Deployment successful.."
+          echo "outcome=success" >> $GITHUB_OUTPUT
+        fi
+      else
+        # Update service
+        if [ "$UPDATE_STATUS" = "DEPLOY_FAILED" ]; then
+          echo "  Error: There were errors while deploying the service"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "  Last deployment information: $DEPLOYMENT_INFO"
+          exit 1 # terminate and indicate error
+
+        elif [ "$UPDATE_STATUS" = "null" ] && [ "$STATUS" = "UNDEPLOYED" ]; then
+          echo "  Error: There were errors while deploying the service"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "  Last deployment information: $DEPLOYMENT_INFO"
+          exit 1 # terminate and indicate error
+
+        elif [ "$UPDATE_STATUS" = "null" ] && [ "$STATUS" = "DEPLOY_FAILED" ]; then
+          echo "  Error: There were errors while deploying the service"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          echo "  Last deployment information: $DEPLOYMENT_INFO"
+          exit 1 # terminate and indicate error
+
+        elif [ $iteration -eq $limit ]; then
+          echo "  Error: The service was not deployed in the expected time, review logs"
+          echo "    example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
+          echo "  The expected iterations were 44 but the proccess reached the limit: $limit"
+          echo "outcome=failure" >> $GITHUB_OUTPUT
+          exit 1 # terminate and indicate error
+
+        else
+          echo "  Deployment successful.."
+          echo "outcome=success" >> $GITHUB_OUTPUT
+        fi
+      fi
+      echo " "
