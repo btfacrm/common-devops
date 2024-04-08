@@ -164,6 +164,8 @@ jobs:
           echo "***********************************************"
           echo " "
           echo "  Create issue for deployment, current environment: $deployment_environment, from: $configuration_environments"
+          
+          # Environment list to an array
           read -a array <<< "$configuration_environments"
 
           currentIndex=-1
@@ -172,22 +174,22 @@ jobs:
               currentIndex=$i;
             fi
           done
+
+          if (( $currentIndex = -1 )); then
+            echo "Error, the current environment is not in the list of deployment"
+            exit 1
+          fi
+
           sizearray=${#array[@]}
 
-          echo "index: $currentIndex"
-          echo "size: $sizearray"
-
           if (( $sizearray > $currentIndex + 1 )); then
-            echo "next environtment: ${array[$currentIndex + 1]}"
+            echo "  Environment to deploy the application: ${array[$currentIndex + 1]"
+            gh -R "${{ github.repository }}" issue create \
+                -t "Deployment ${array[$currentIndex + 1] ${{ env.service_name }} ${{ env.service_version }}" \
+                -a "${{ env.github_deployeruser }}" \
+                -b "The deployment job triggered this action" \
+                -l "forward"
           else
             echo "No more environments to deploy"
           fi
 
-          # Environment list to an array
-          #read -a array <<< "$configuration_environments"
-          #echo "  Environment to deploy the application: ${array[0]}"
-          #gh -R "${{ github.repository }}" issue create \
-          #    -t "Deployment ${array[0]} ${{ env.service_name }} ${{ env.service_version }}" \
-          #    -a "${{ env.github_deployeruser }}" \
-          #    -b "The build job triggered this action. An analysis task will be responsible for checking if the service is deployable." \
-          #    -l "forward,dev"
