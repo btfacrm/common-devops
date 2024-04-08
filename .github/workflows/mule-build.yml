@@ -121,6 +121,8 @@ jobs:
           # Environment list to an array
           read -a environmentarray <<< "$configuration_environments"
           echo "test"
+          echo "$environmentarray"
+          echo "test"
           echo "  Environment to deploy the application: ${environmentarray[0]}
           #gh -R "${{ github.repository }}" issue create \
           #    -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
