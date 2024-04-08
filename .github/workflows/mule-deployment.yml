@@ -183,10 +183,12 @@ jobs:
           echo "test1"
           sizearray=${#array[@]}
           echo "test2"
+          nextindex=$currentIndex + 1
+          echo "test2-5"
 
-          if (( $sizearray > $currentIndex + 1 )); then
+          if (( $sizearray > $nextindex )); then
             echo "test3-1"
-            nextenvironment=${array[$currentIndex + 1]
+            nextenvironment=${array[$nextindex]
             echo "test3-2"
 
             echo "  Environment to deploy the application: $nextenvironment"
