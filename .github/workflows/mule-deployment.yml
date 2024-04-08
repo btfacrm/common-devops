@@ -175,7 +175,7 @@ jobs:
             fi
           done
 
-          if (( $currentIndex = -1 )); then
+          if (( $currentIndex == -1 )); then
             echo "Error, the current environment is not in the list of deployment"
             exit 1
           fi
@@ -183,9 +183,9 @@ jobs:
           sizearray=${#array[@]}
 
           if (( $sizearray > $currentIndex + 1 )); then
-            echo "  Environment to deploy the application: ${array[$currentIndex + 1]"
+            echo "  Environment to deploy the application: ${array[currentIndex + 1]"
             gh -R "${{ github.repository }}" issue create \
-                -t "Deployment ${array[$currentIndex + 1] ${{ env.service_name }} ${{ env.service_version }}" \
+                -t "Deployment ${array[currentIndex + 1] ${{ env.service_name }} ${{ env.service_version }}" \
                 -a "${{ env.github_deployeruser }}" \
                 -b "The deployment job triggered this action" \
                 -l "forward"
