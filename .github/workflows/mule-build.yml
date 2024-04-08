@@ -57,6 +57,7 @@ jobs:
                   "cicd_connectedapp_secret": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_SECRET }}",
 
                   "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
+                  "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
                   "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
