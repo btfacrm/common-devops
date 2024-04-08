@@ -169,5 +169,5 @@ runs:
         echo "BAT variables:"
         echo "  salesforcesapi= "$salesforcesapi
         echo " "
-        substitution_cloudhub = $( echo "$configuration_cloudhub" )
+        substitution_cloudhub=$(eval "echo $configuration_cloudhub")
         echo "substitution_cloudhub = $substitution_cloudhub"
