@@ -141,11 +141,11 @@ jobs:
           echo " "
           ls -l
 
-      - name: Deploy the service in the Cloudhub1
-        id: deployment-ch1
-        uses: btfacrm/common-devops/packages/process-cloudhub1v2@main
-        with:
-          deployment-env: ${{ env.deployment_environment }}
+#      - name: Deploy the service in the Cloudhub1
+#        id: deployment-ch1
+#        uses: btfacrm/common-devops/packages/process-cloudhub1v2@main
+#        with:
+#          deployment-env: ${{ env.deployment_environment }}
 
       - name: Create badge for deployment
         uses: btfacrm/common-devops/packages/badge@main
@@ -157,8 +157,8 @@ jobs:
 
       - name: Create a deployment issue
         id: issue-create  
-        env:
-          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
+        #env:
+        #  GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
         shell: bash
         run: |
           echo " "
@@ -194,7 +194,6 @@ jobs:
             echo "  Next environment to deploy the application: $nextenvironment"
             gh -R "${{ github.repository }}" issue create \
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
-                -a "${{ env.github_deployeruser }}" \
                 -b "The deployment job triggered this action"
           else
             echo "  No more environments to deploy"
