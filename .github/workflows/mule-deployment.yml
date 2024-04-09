@@ -195,6 +195,7 @@ jobs:
             echo "  Next environment to deploy the application: $nextenvironment"
             gh -R "${{ github.repository }}" issue create \
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
+                -a "${{ env.github_deployeruser }}" \
                 -b "The deployment job triggered this action"
           else
             echo "  No more environments to deploy"
