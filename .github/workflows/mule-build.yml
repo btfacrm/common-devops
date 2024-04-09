@@ -239,7 +239,8 @@ jobs:
         id: issue-create  
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
-          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
+          GITHUB_TOKEN: ${{ github.token }}
+          #GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
         shell: bash
         run: |
           echo " "
