@@ -20,7 +20,6 @@ env:
   MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
   MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
   MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
-  LABEL_FORWARD: "forward"
 
 jobs:
 
@@ -45,6 +44,10 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
+          #
+          # Example: printing context information to the log
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
+          #
           echo " "
           echo "*****************************************************"
           echo "Debug dump GitHub context "
@@ -192,8 +195,7 @@ jobs:
             gh -R "${{ github.repository }}" issue create \
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
                 -a "${{ env.github_deployeruser }}" \
-                -b "The deployment job triggered this action" \
-                -l "forward"
+                -b "The deployment job triggered this action"
           else
             echo "  No more environments to deploy"
           fi
