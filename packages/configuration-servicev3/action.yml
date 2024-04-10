@@ -8,6 +8,7 @@ runs:
     - name: Debug dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
+      shell: bash
       run: |
         #
         # Example: printing context information to the log
@@ -57,13 +58,13 @@ runs:
         fi
 
     - name: Get the source code for build environment
-      if: ${{ deployment_environment == 'build' }}
+      if: ${{ env.deployment_environment == 'build' }}
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Get the source code for deployment 
-      if: ${{ deployment_environment != 'build' }}
+      if: ${{ env.deployment_environment != 'build' }}
       uses: actions/checkout@v4
       with:
         ref: '${{env.deployment_version}}'
@@ -173,7 +174,7 @@ runs:
 
     - name: Generate environment variables for BAT
       id: generate-service-env-variables
-      if: ${{ deployment_environment != 'build' }}
+      if: ${{ env.deployment_environment != 'build' }}
       shell: bash
       run: |
         echo " "
