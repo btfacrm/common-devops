@@ -21,21 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get the source code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set github token variable
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Set github token variable "
-          echo "***********************************************"
-          echo " "
-          echo "github_admintasks_accesstoken=${{ secrets.GH_ADMINTASKS_ACCESSTOKEN }}" >> $GITHUB_ENV
-          
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
         with:
@@ -99,10 +85,9 @@ jobs:
               }
             }
 
+      # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
         uses: btfacrm/common-devops/packages/configuration-servicev2@main
-        with:
-          environment: build
       
       - name: Verify if the github tag exists
         if: "!contains(env.service_version, 'snapshot')"

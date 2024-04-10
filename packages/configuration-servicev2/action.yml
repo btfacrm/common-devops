@@ -1,24 +1,78 @@
 name: 'Get global configuration'
 description: 'Get the global configuration and secrets from Azure KeyVault'
-inputs:
-  environment:
-    required: true
-    description: Get the configuration for the specified environment
-  debug:
-    required: false
-    type: boolean
-    default: false
-    description: Flag to debug this action, default is false
 
 runs:
   using: "composite"
   steps:
 
+    - name: Debug dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        #
+        # Example: printing context information to the log
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
+        #
+        echo " "
+        echo "*****************************************************"
+        echo "Debug dump GitHub context "
+        echo "*****************************************************"
+        echo " "
+        echo "$GITHUB_CONTEXT"
+        
+    - name: Get from github context the build or deployment data
+      shell: bash
+      run: |
+        echo " "
+        echo "******************************************************"
+        echo "Get from github context the build or deployment data "
+        echo "******************************************************"
+        echo " "
+        echo "  Values from github context: "
+        echo "    Issue number: ${{ github.event.issue.number}}"
+        echo "    Title: ${{ github.event.issue.title}}"
+        echo '    Labels: ${{ toJson(github.event.issue.labels) }}'
+        echo "    Repository: ${{ github.repository }}"
+        echo " "
+
+        line=$(echo "${{ github.event.issue.title}}")
+
+        exit 1
+
+        if [ "$line" = "" ] ; then
+          echo "deployment_environment=build" >> $GITHUB_ENV
+        else
+          action="$(cut -d' ' -f1 <<<$line)"
+          deployment_environment="$(cut -d' ' -f2 <<< $line)"
+          service="$(cut -d' ' -f3 <<< $line)"
+          version="$(cut -d' ' -f4 <<< $line)"
+          echo "  Values from issue title:"
+          echo "    Action: $action"
+          echo "    Environment: $deployment_environment"
+          echo "    Service: $service"
+          echo "    Version: $version"
+          echo "deployment_environment=$deployment_environment" >> $GITHUB_ENV
+          echo "deployment_version=$version" >> $GITHUB_ENV
+          echo "deployment_service=$service" >> $GITHUB_ENV
+        fi
+
+    - name: Get the source code for build environment
+      if: ${{ deployment_environment == 'build' }}
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get the source code for deployment 
+      if: ${{ deployment_environment != 'build' }}
+      uses: actions/checkout@v4
+      with:
+        ref: '${{env.deployment_version}}'
+
     - name: Get service metadata from pom.xml
       shell: bash
       run: |
         echo " "
-        echo "Configuration for environment: ${{ inputs.environment }}"
+        echo "Configuration for environment: ${{ deployment_environment }}"
         echo " "
         echo "**************************************"
         echo "Getting service metadata from pom.xml "
@@ -104,22 +158,22 @@ runs:
         substitution_test_properties=$(eval "echo $pathdata")
         echo "configuration_test_properties=$substitution_test_properties" >> $GITHUB_ENV
 
-        if [ "${{ inputs.environment }}" != "build" ] ; then
-          echo "  Getting ${{ inputs.environment }} configuration"
-          parse_yaml ".${{ inputs.environment }}.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ inputs.environment }}.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ inputs.environment }}.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ inputs.environment }}.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ inputs.environment }}.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
+        if [ "${{ deployment_environment }}" != "build" ] ; then
+          echo "  Getting ${{ deployment_environment }} configuration"
+          parse_yaml ".${{ deployment_environment }}.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ deployment_environment }}.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ deployment_environment }}.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ deployment_environment }}.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".${{ deployment_environment }}.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
           
-          parse_yaml ".${{ inputs.environment }}.cloudhub";
+          parse_yaml ".${{ deployment_environment }}.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
         fi        
 
     - name: Generate environment variables for BAT
       id: generate-service-env-variables
-      if: ${{ inputs.environment != 'build' }}
+      if: ${{ deployment_environment != 'build' }}
       shell: bash
       run: |
         echo " "
@@ -157,7 +211,7 @@ runs:
       run: |
         echo " "
         echo "*********************************************************"      
-        echo "DEBUG show variables for service in environment: ${{ inputs.environment }}"
+        echo "DEBUG show variables for service in environment: ${{ deployment_environment }}"
         echo "*********************************************************"
         echo " "
         echo "Configuration variables:"
