@@ -38,23 +38,23 @@ runs:
 
         line=$(echo "${{ github.event.issue.title}}")
 
-        exit 1
-
-        if [ "$line" = "" ] ; then
+        if [ "$line" == "" ] ; then
+          echo "  The service configuration is for build environment"
           echo "deployment_environment=build" >> $GITHUB_ENV
         else
           action="$(cut -d' ' -f1 <<<$line)"
           deployment_environment="$(cut -d' ' -f2 <<< $line)"
           service="$(cut -d' ' -f3 <<< $line)"
           version="$(cut -d' ' -f4 <<< $line)"
-          echo "  Values from issue title:"
-          echo "    Action: $action"
-          echo "    Environment: $deployment_environment"
-          echo "    Service: $service"
-          echo "    Version: $version"
+          echo "  Deployment variables:"
+          echo "    deployment_action: $action"
+          echo "    deployment_environment: $deployment_environment"
+          echo "    deployment_service: $service"
+          echo "    deployment_versio: $version"
           echo "deployment_environment=$deployment_environment" >> $GITHUB_ENV
           echo "deployment_version=$version" >> $GITHUB_ENV
           echo "deployment_service=$service" >> $GITHUB_ENV
+          echo "deployment_action=$action" >> $GITHUB_ENV
         fi
 
     - name: Get the source code for build environment
