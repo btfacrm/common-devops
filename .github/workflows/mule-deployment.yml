@@ -40,21 +40,6 @@ jobs:
 
     steps:
 
-      - name: Debug dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          #
-          # Example: printing context information to the log
-          # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
-          #
-          echo " "
-          echo "*****************************************************"
-          echo "Debug dump GitHub context "
-          echo "*****************************************************"
-          echo " "
-          echo "$GITHUB_CONTEXT"
-
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
         with:
@@ -118,8 +103,9 @@ jobs:
               }
             }
 
-      - name: Get workflow metadata
-        uses: btfacrm/common-devops/packages/configuration-issuemanagementv2@main
+      # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
+      - name: Get service configuration
+        uses: btfacrm/common-devops/packages/configuration-servicev3@main
 
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
