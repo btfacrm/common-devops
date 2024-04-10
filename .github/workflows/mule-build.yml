@@ -87,7 +87,7 @@ jobs:
 
       # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
-        uses: btfacrm/common-devops/packages/configuration-servicev2@main
+        uses: btfacrm/common-devops/packages/configuration-servicev3@main
       
       - name: Verify if the github tag exists
         if: "!contains(env.service_version, 'snapshot')"
