@@ -73,7 +73,7 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "Configuration for environment: ${{ deployment_environment }}"
+        echo "Configuration for environment: $deployment_environment"
         echo " "
         echo "**************************************"
         echo "Getting service metadata from pom.xml "
@@ -159,15 +159,15 @@ runs:
         substitution_test_properties=$(eval "echo $pathdata")
         echo "configuration_test_properties=$substitution_test_properties" >> $GITHUB_ENV
 
-        if [ "${{ deployment_environment }}" != "build" ] ; then
-          echo "  Getting ${{ deployment_environment }} configuration"
-          parse_yaml ".${{ deployment_environment }}.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ deployment_environment }}.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ deployment_environment }}.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ deployment_environment }}.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".${{ deployment_environment }}.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
+        if [ "$deployment_environment" != "build" ] ; then
+          echo "  Getting $deployment_environment configuration"
+          parse_yaml ".$deployment_environment.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
           
-          parse_yaml ".${{ deployment_environment }}.cloudhub";
+          parse_yaml ".$deployment_environment.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
         fi        
@@ -212,7 +212,7 @@ runs:
       run: |
         echo " "
         echo "*********************************************************"      
-        echo "DEBUG show variables for service in environment: ${{ deployment_environment }}"
+        echo "DEBUG show variables for service in environment: $deployment_environment"
         echo "*********************************************************"
         echo " "
         echo "Configuration variables:"
