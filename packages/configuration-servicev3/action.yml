@@ -20,6 +20,8 @@ runs:
         echo "*****************************************************"
         echo " "
         echo "$GITHUB_CONTEXT"
+        echo " "
+
         
     - name: Get from github context the build or deployment data
       shell: bash
@@ -56,6 +58,7 @@ runs:
           echo "deployment_service=$service" >> $GITHUB_ENV
           echo "deployment_action=$action" >> $GITHUB_ENV
         fi
+        echo " "
 
     - name: Get the source code for build environment
       if: ${{ env.deployment_environment == 'build' }}
@@ -69,15 +72,15 @@ runs:
       with:
         ref: '${{env.deployment_version}}'
 
-    - name: Get service metadata from pom.xml
+    - name: Get configuration from pom.xml
       shell: bash
       run: |
         echo " "
-        echo "Configuration for environment: $deployment_environment"
+        echo "**************************************"
+        echo "Get configuration from pom.xml "
+        echo "**************************************"
         echo " "
-        echo "**************************************"
-        echo "Getting service metadata from pom.xml "
-        echo "**************************************"
+        echo "Configuration for environment: $deployment_environment"
         echo " "
         echo "Install XMLStarlet in Ubuntu"
         sudo apt-get install xmlstarlet --fix-missing        
@@ -122,14 +125,13 @@ runs:
         echo "DEBUG variables from global.yml"
         echo "*********************************************"
         echo " "
-        echo "Configuration variables:"
-        echo "  github_deploymentproject= $github_deploymentproject"
-        echo "  github_deployeruser= $github_deployeruser"
-        echo "  github_gist_path= $github_gist_path"
-        echo "  salesforcesapi_dev= $salesforcesapi_dev"
-        echo "  salesforcesapi_prd= $salesforcesapi_prd"
-        echo "  testvar1= $testvar1"
-        echo "  testvar2= $testvar2"
+        echo "  Configuration variables:"
+        echo "    github_deploymentproject= $github_deploymentproject"
+        echo "    github_deployeruser= $github_deployeruser"
+        echo "    github_gist_path= $github_gist_path"
+        echo "    salesforcesapi_dev= $salesforcesapi_dev"
+        echo "    salesforcesapi_prd= $salesforcesapi_prd"
+        echo " "
 
     
     - name: Get configuration parameters for the service
@@ -170,7 +172,9 @@ runs:
           parse_yaml ".$deployment_environment.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
-        fi        
+        fi
+        echo " "
+     
 
     - name: Generate environment variables for BAT
       id: generate-service-env-variables
@@ -206,6 +210,7 @@ runs:
             echo "$name=$value_fromvariable" >> $GITHUB_ENV
           done          
         fi
+        echo " "
 
     - name: DEBUG - Show variables
       shell: bash
@@ -229,3 +234,4 @@ runs:
         echo "  configuration_cloudhub= $configuration_cloudhub"
         echo "BAT variables:"
         echo "  salesforcesapi= "$salesforcesapi
+        echo " "
