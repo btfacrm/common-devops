@@ -36,7 +36,8 @@ jobs:
 
     steps:
 
-      - uses: actions/create-github-app-token@v1
+      - name: Create a GitHub App installation access token
+        uses: actions/create-github-app-token@v1
         id: app-token
         with:
           app-id: 874519
@@ -256,8 +257,6 @@ jobs:
         id: issue-create  
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
-          #GITHUB_TOKEN: ${{ github.token }}
-          #GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         shell: bash
         run: |
@@ -266,7 +265,7 @@ jobs:
           echo "Create Deployment Issue "
           echo "***********************************************"
           echo " "
-          echo "  Create issue for deployment in the first environment: $configuration_environments"
+          echo "  Create issue for deployment in the first environment from list: $configuration_environments"
 
           # Environment list to an array
           read -a array <<< "$configuration_environments"

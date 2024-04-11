@@ -27,10 +27,10 @@ jobs:
   # Analyse deployment of service
   ##################################################################
   cloudhub:
-    if: |
-      github.actor == 'jpontdia' ||
-      github.actor == 'GitHubActions' ||
-      github.actor == 'github-actions'
+    #if: |
+    #  github.actor == 'jpontdia' ||
+    #  github.actor == 'GitHubActions' ||
+    #  github.actor == 'github-actions'
     name: CloudHub
     runs-on: ubuntu-latest
     outputs:
@@ -39,6 +39,25 @@ jobs:
       deployment-env: ${{ steps.verify-deployment.outputs.deployment-env }}
 
     steps:
+
+      - name: Create a GitHub App installation access token
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: 874519
+          private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}
+
+      - name: Verify app token
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Verify App token"
+          echo "***********************************************"
+          echo " "
+          echo " App token: ${{ steps.app-token.outputs.token }}"
+          echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+          # echo "github_admintasks_accesstoken=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
@@ -60,8 +79,8 @@ jobs:
                   "cicd_connectedapp_clientid": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_CLIENTID }}",
                   "cicd_connectedapp_secret": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_SECRET }}",
 
-                  "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
                   "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
+                  "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
                   "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
@@ -144,8 +163,7 @@ jobs:
       - name: Create a deployment issue
         id: issue-create  
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        #  GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         shell: bash
         run: |
           echo " "
