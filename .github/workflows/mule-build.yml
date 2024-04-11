@@ -30,6 +30,17 @@ jobs:
           app-id: 874519
           private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}
 
+      - name: Verify app token
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Verify App token"
+          echo "***********************************************"
+          echo " "
+          echo " App token: ${{ steps.app-token.outputs.token }}"
+          exit 1
+
       - name: Get Github key for Automation Bot
         shell: bash
         run: |
@@ -107,16 +118,7 @@ jobs:
 
 
 
-      - name: Verify app token
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Verify App token"
-          echo "***********************************************"
-          echo " "
-          echo " App token: ${{ steps.app-token.outputs.token }}"
-          exit 1
+
           
       # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
