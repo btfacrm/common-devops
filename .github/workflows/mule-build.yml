@@ -24,6 +24,17 @@ jobs:
 
     steps:
 
+      - name: Get Github key for Automation Bot
+        shell: bash
+        run: |
+          echo " "
+          echo "**************************************"
+          echo " Get Github key for Automation Bot"
+          echo "**************************************"
+          echo " "
+          echo "github_automationbot_key=${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}" >> $GITHUB_ENV
+          
+
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
         with:
@@ -46,7 +57,6 @@ jobs:
 
                   "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
                   "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
-                  "github_automationbot_key": "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
                   "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
