@@ -1,5 +1,5 @@
 ##########################################################################
-# CICD Pipeline
+# CICD Pipeline - Build Mulesoft Application
 ##########################################################################
 
 name: Build
@@ -12,13 +12,11 @@ env:
   
 jobs:
 
-  ##########################################################################
-  # BUILD MULESOFT SERVICE
-  ##########################################################################
-
-  build:
+  Build:
     name: Build
     runs-on: ubuntu-latest
+
+    # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:
       actions: write
       checks: write
@@ -40,8 +38,8 @@ jobs:
         uses: actions/create-github-app-token@v1
         id: app-token
         with:
-          app-id: 874519
-          private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}
+          app-id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
+          private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
 
       - name: Verify app token
         shell: bash
@@ -53,7 +51,6 @@ jobs:
           echo " "
           echo " App token: ${{ steps.app-token.outputs.token }}"
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
-          # echo "github_admintasks_accesstoken=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
@@ -253,7 +250,7 @@ jobs:
           color: '535597'
           file: ${{ env.service_name }}-re.svg
 
-      - name: Create a deployment issue
+      - name: Create the deployment issue
         id: issue-create  
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
@@ -262,7 +259,7 @@ jobs:
         run: |
           echo " "
           echo "***********************************************"
-          echo "Create Deployment Issue "
+          echo "Create the deployment Issue "
           echo "***********************************************"
           echo " "
           echo "  Create issue for deployment in the first environment from list: $configuration_environments"
@@ -273,4 +270,5 @@ jobs:
           gh -R "${{ github.repository }}" issue create \
               -t "Deployment ${array[0]} ${{ env.service_name }} ${{ env.service_version }}" \
               -a "${{ env.github_deployeruser }}" \
-              -b "The build job triggered this action"
+              -b "The build job triggered this issue" \
+              -l "deployment"
