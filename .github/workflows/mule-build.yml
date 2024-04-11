@@ -19,6 +19,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
     steps:
 
@@ -44,6 +46,7 @@ jobs:
 
                   "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
                   "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
+                  "github_automationbot_key": "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
                   "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
@@ -85,6 +88,23 @@ jobs:
               }
             }
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: 874519
+          private-key: $github_automationbot_key
+
+      - name: Verify app token
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Verify App token"
+          echo "***********************************************"
+          echo " "
+          echo " App token: ${{ steps.app-token.outputs.token }}"
+          exit 1
+          
       # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
         uses: btfacrm/common-devops/packages/configuration-servicev3@main
