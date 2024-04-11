@@ -39,19 +39,8 @@ jobs:
           echo "***********************************************"
           echo " "
           echo " App token: ${{ steps.app-token.outputs.token }}"
-          exit 1
-
-      - name: Get Github key for Automation Bot
-        shell: bash
-        run: |
-          echo " "
-          echo "**************************************"
-          echo " Get Github key for Automation Bot"
-          echo "**************************************"
-          echo " "
-          exit 1
-          echo "github_automationbot_key=${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}" >> $GITHUB_ENV
-          
+          echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+          echo "github_admintasks_accesstoken=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
@@ -73,7 +62,6 @@ jobs:
                   "cicd_connectedapp_clientid": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_CLIENTID }}",
                   "cicd_connectedapp_secret": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_SECRET }}",
 
-                  "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
                   "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
@@ -115,10 +103,6 @@ jobs:
                   "btfacrm_salesforce_prd_certificatealias": "${{ secrets.BTFACRM_SALESFORCE_PRD_CERTIFICATEALIAS }}"
               }
             }
-
-
-
-
           
       # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
@@ -259,8 +243,9 @@ jobs:
         id: issue-create  
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          #GITHUB_TOKEN: ${{ github.token }}
           #GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         shell: bash
         run: |
           echo " "
