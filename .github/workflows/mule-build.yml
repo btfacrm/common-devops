@@ -24,6 +24,12 @@ jobs:
 
     steps:
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: 874519
+          private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}
+
       - name: Get Github key for Automation Bot
         shell: bash
         run: |
@@ -32,6 +38,7 @@ jobs:
           echo " Get Github key for Automation Bot"
           echo "**************************************"
           echo " "
+          exit 1
           echo "github_automationbot_key=${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}" >> $GITHUB_ENV
           
 
@@ -98,11 +105,7 @@ jobs:
               }
             }
 
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: 874519
-          private-key: $github_automationbot_key
+
 
       - name: Verify app token
         shell: bash
