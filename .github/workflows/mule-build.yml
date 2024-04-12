@@ -51,7 +51,6 @@ jobs:
           echo " "
           echo " App token: ${{ steps.app-token.outputs.token }}"
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
-          exit 1
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
