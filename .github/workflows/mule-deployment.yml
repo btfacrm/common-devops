@@ -128,7 +128,6 @@ jobs:
           echo "***************************************"
           echo " "
           ls -l
-          exit 1
 
 #      - name: Deploy the service in the Cloudhub1 
 #        id: deployment-ch1
