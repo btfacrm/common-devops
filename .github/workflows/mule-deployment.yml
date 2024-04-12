@@ -143,8 +143,34 @@ jobs:
           color: '535597'
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
 
+      - name: Deployment analysis
+        id: deployment-analysis  
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Deployment analysis"
+          echo "***********************************************"
+          echo " "
+          execute_deployment="true"
+          if [[ "${{github.run_number}}" != "1" ]]; then
+            echo "  The workflow was re-run"
+            if [[ "$configuration_redeployment_next_environment" == "false" ]]; then
+              execute_deployment="false"
+              echo " "
+              echo "  Service won't be deployed to the next environment,redeployment-next-environment= $configuration_redeployment_next_environment"
+            else
+              echo "  The service it is a candiate for deployment in next environment, configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
+            fi
+          else
+            echo "  This is the first time the workflow is running, it is a candidate to be deployed to the next environment"
+          fi
+          echo "execute_deployment=$execute_deployment" >> $GITHUB_ENV
+          echo " "
+
       - name: Create a deployment issue
-        id: create-deployment-issue  
+        id: create-deployment-issue
+        if: "env.execute_deployment == 'true'"
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         shell: bash
@@ -182,7 +208,7 @@ jobs:
             echo "  Next environment to deploy the application: $nextenvironment"
             gh -R "${{ github.repository }}" issue create \
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
-                -a "${{ env.github_deployeruser }}" \
+                -a "${{ github.triggering_actor}}" \
                 -b "The deployment job in $deployment_environment environment triggered this issue" \
                 -l "deployment"
           else

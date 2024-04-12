@@ -53,10 +53,6 @@ jobs:
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
           echo " "
           echo "  Trigerring Actor: ${{ github.triggering_actor}}"
-          echo "  Actor: ${{ github.actor}}"
-          exit 1
-
-
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master

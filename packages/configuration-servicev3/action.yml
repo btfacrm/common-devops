@@ -1,6 +1,8 @@
 name: 'Get global configuration'
 description: 'Get the global configuration and secrets from Azure KeyVault'
 
+# Github Context doc - https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+# Github Variables doc - https://docs.github.com/en/actions/learn-github-actions/variables
 runs:
   using: "composite"
   steps:
@@ -156,6 +158,7 @@ runs:
         parse_yaml '.skiptests'; echo "configuration_skiptests=$pathdata" >> $GITHUB_ENV
         parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
         parse_yaml ".apptype"; echo "configuration_apptype=$pathdata" >> $GITHUB_ENV
+        parse_yaml ".redeployment-next-environment"; echo "configuration_redeployment_next_environment=$pathdata" >> $GITHUB_ENV
 
         parse_yaml '.test-properties';
         substitution_test_properties=$(eval "echo $pathdata")
@@ -224,7 +227,8 @@ runs:
         echo "  configuration_settings= "$configuration_settings
         echo "  configuration_skiptests= "$configuration_skiptests          
         echo "  configuration_environments= "$configuration_environments
-        echo "  configuration_deployable= "$configuration_deployable
+        echo "  configuration_apptype= "$configuration_apptype
+        echo "  configuration_redeployment_next_environment= "$configuration_redeployment_next_environment
         echo "  configuration_test_properties= $configuration_test_properties"
         echo "  configuration_deployment_name= "$configuration_deployment_name
         echo "  configuration_deployment_organization= "$configuration_deployment_organization
