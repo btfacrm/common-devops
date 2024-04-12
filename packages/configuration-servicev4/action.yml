@@ -1,5 +1,5 @@
 name: 'Get global configuration'
-description: 'Get the global configuration and secrets from Azure KeyVault'
+description: 'Get the global configuration and secrets'
 
 # Github Context doc - https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
 # Github Variables doc - https://docs.github.com/en/actions/learn-github-actions/variables
