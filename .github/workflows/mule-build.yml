@@ -49,8 +49,14 @@ jobs:
           echo "Verify App token"
           echo "***********************************************"
           echo " "
-          echo " App token: ${{ steps.app-token.outputs.token }}"
+          echo "  App token: ${{ steps.app-token.outputs.token }}"
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+          echo " "
+          echo "  Trigerring Actor: ${{ github.triggering_actor}}"
+          echo "  Actor: ${{ github.actor}}"
+          exit 1
+
+
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
@@ -269,6 +275,6 @@ jobs:
           echo "  Environment to deploy the application: ${array[0]}"
           gh -R "${{ github.repository }}" issue create \
               -t "Deployment ${array[0]} ${{ env.service_name }} ${{ env.service_version }}" \
-              -a "${{ env.github_deployeruser }}" \
+              -a "${{ github.triggering_actor}}" \
               -b "The build job triggered this issue" \
               -l "deployment"
