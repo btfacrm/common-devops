@@ -55,7 +55,7 @@ jobs:
         uses: peter-murray/workflow-application-token-action@v3
         id: app-token
         with:
-          application_id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
+          application_id: 874519
           application_private_key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
 
       - name: Verify app token
