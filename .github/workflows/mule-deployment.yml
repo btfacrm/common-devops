@@ -153,9 +153,10 @@ jobs:
           echo "***********************************************"
           echo " "
           echo "  github.run_number= ${{github.run_number}}"
-          
+          echo "  github.run_attempt= ${{github.run_attempt}}"
+
           execute_deployment="true"
-          if [[ "${{github.run_number}}" != "1" ]]; then
+          if [[ "${{github.run_attempt}}" != "1" ]]; then
             echo "  The workflow was re-run"
             if [[ "$configuration_redeployment_next_environment" == "false" ]]; then
               execute_deployment="false"
