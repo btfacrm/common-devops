@@ -43,10 +43,10 @@ jobs:
           tempvar1=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}" | sed 's/./& /g' )
           tempvar2=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}" | sed 's/./& /g' )
           tempvar3=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}" | sed 's/./& /g' )
-
-          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_APPID: $tempvar1"
-          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_PEM: $tempvar2"
-          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_KEY: $tempvar3"
+          echo "  Variables:"
+          echo "    BTFACRM_GITHUB_AUTOMATIONBOT_APPID: $tempvar1"
+          echo "    BTFACRM_GITHUB_AUTOMATIONBOT_PEM: $tempvar2"
+          echo "    BTFACRM_GITHUB_AUTOMATIONBOT_KEY: $tempvar3"
 
       #- name: Create a GitHub App installation access token
       #  uses: actions/create-github-app-token@v1
@@ -59,7 +59,7 @@ jobs:
         uses: peter-murray/workflow-application-token-action@v3
         id: app-token
         with:
-          application_id: 874519
+          application_id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
           application_private_key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
 
       - name: Verify app token
