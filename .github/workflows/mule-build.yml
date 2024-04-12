@@ -34,6 +34,20 @@ jobs:
 
     steps:
 
+      - name: DEBUG variables
+        shell: bash
+        run: |
+          echo " "
+          echo "*********************************************"      
+          echo "DEBUG variables"
+          echo "*********************************************"
+          echo " "
+
+          tempvar1=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}" | sed 's/./& /g' )
+          tempvar2=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}" | sed 's/./& /g' )
+          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_APPID: $tempvar1"
+          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_PEM: $tempvar2"
+
       - name: Create a GitHub App installation access token
         uses: actions/create-github-app-token@v1
         id: app-token
