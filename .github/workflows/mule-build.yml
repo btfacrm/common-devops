@@ -34,27 +34,6 @@ jobs:
 
     steps:
 
-      - name: DEBUG variables
-        shell: bash
-        run: |
-          echo " "
-          echo "*********************************************"      
-          echo "DEBUG variables"
-          echo "*********************************************"
-          echo " "
-
-          tempvar1=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}" | sed 's/./& /g' )
-          tempvar2=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}" | sed 's/./& /g' )
-          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_APPID: $tempvar1"
-          echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_PEM: $tempvar2"
-
-      #- name: Create a GitHub App installation access token
-      #  uses: actions/create-github-app-token@v1
-      #  id: app-token
-      #  with:
-      #    app-id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
-      #    private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
-
       - name: Create a GitHub App installation access token
         uses: peter-murray/workflow-application-token-action@v3
         id: app-token
@@ -272,8 +251,8 @@ jobs:
           color: '535597'
           file: ${{ env.service_name }}-re.svg
 
-      - name: Create the deployment issue
-        id: issue-create  
+      - name: Create a deployment issue
+        id: create-deployment-issue  
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
@@ -281,7 +260,7 @@ jobs:
         run: |
           echo " "
           echo "***********************************************"
-          echo "Create the deployment Issue "
+          echo "Create Deployment Issue "
           echo "***********************************************"
           echo " "
           echo "  Create issue for deployment in the first environment from list: $configuration_environments"
