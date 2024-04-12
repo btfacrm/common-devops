@@ -152,6 +152,8 @@ jobs:
           echo "Deployment analysis"
           echo "***********************************************"
           echo " "
+          echo "  github.run_number= ${{github.run_number}}"
+          
           execute_deployment="true"
           if [[ "${{github.run_number}}" != "1" ]]; then
             echo "  The workflow was re-run"
