@@ -1,0 +1,241 @@
+name: 'Get global configuration'
+description: 'Get the global configuration and secrets from Azure KeyVault'
+
+# Github Context doc - https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+# Github Variables doc - https://docs.github.com/en/actions/learn-github-actions/variables
+runs:
+  using: "composite"
+  steps:
+
+    - name: Debug dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      shell: bash
+      run: |
+        #
+        # Example: printing context information to the log
+        # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
+        #
+        echo " "
+        echo "*****************************************************"
+        echo "Debug dump GitHub context "
+        echo "*****************************************************"
+        echo " "
+        echo "$GITHUB_CONTEXT"
+        echo " "
+
+        
+    - name: Get from github context the build or deployment data
+      shell: bash
+      run: |
+        echo " "
+        echo "******************************************************"
+        echo "Get from github context the build or deployment data "
+        echo "******************************************************"
+        echo " "
+        echo "  Values from github context: "
+        echo "    Issue number: ${{ github.event.issue.number}}"
+        echo "    Title: ${{ github.event.issue.title}}"
+        echo '    Labels: ${{ toJson(github.event.issue.labels) }}'
+        echo "    Repository: ${{ github.repository }}"
+        echo " "
+
+        line=$(echo "${{ github.event.issue.title}}")
+
+        if [ "$line" == "" ] ; then
+          echo "  The service configuration is for build environment"
+          echo "deployment_environment=build" >> $GITHUB_ENV
+        else
+          action="$(cut -d' ' -f1 <<<$line)"
+          deployment_environment="$(cut -d' ' -f2 <<< $line)"
+          service="$(cut -d' ' -f3 <<< $line)"
+          version="$(cut -d' ' -f4 <<< $line)"
+          echo "  Deployment variables:"
+          echo "    deployment_action: $action"
+          echo "    deployment_environment: $deployment_environment"
+          echo "    deployment_service: $service"
+          echo "    deployment_versio: $version"
+          echo "deployment_environment=$deployment_environment" >> $GITHUB_ENV
+          echo "deployment_version=$version" >> $GITHUB_ENV
+          echo "deployment_service=$service" >> $GITHUB_ENV
+          echo "deployment_action=$action" >> $GITHUB_ENV
+        fi
+        echo " "
+
+    - name: Get the source code for build environment
+      if: ${{ env.deployment_environment == 'build' }}
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get the source code for deployment 
+      if: ${{ env.deployment_environment != 'build' }}
+      uses: actions/checkout@v4
+      with:
+        ref: '${{env.deployment_version}}'
+
+    - name: Get configuration from pom.xml
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Get configuration from pom.xml "
+        echo "**************************************"
+        echo " "
+        echo "Configuration for environment: $deployment_environment"
+        echo " "
+        echo "Install XMLStarlet in Ubuntu"
+        sudo apt-get install xmlstarlet --fix-missing        
+        echo " "
+        echo "xmlstarlet --version"
+        xmlstarlet --version
+        echo " "
+        echo "Get info from pom.xml"
+        servicename=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:name" pom.xml )
+        serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
+        servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
+        serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
+        echo " "
+        echo "Create environment variables with pom data"
+        echo "service_name=$servicename" >> $GITHUB_ENV
+        echo "service_version=$serviceversion" >> $GITHUB_ENV
+        echo "service_group=$servicegroup" >> $GITHUB_ENV
+        echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
+        echo " "
+        echo "Variables generated based on pom.xml:"
+        echo "  service_name= "$servicename
+        echo "  service_version= "$serviceversion          
+        echo "  service_group= "$servicegroup
+        echo "  service_artifact= "$serviceartifact
+        echo " "
+
+    - name: Get configuration files
+      uses: btfacrm/common-devops/packages/get-file@main
+      with:
+        file: "$GLOBAL_CONFIGURATION $service_name.yml"
+
+    - name: Import variables from _global.yml
+      uses: zlatko-ms/envarfiles@main
+      with:
+        paths: ${{ env.GLOBAL_CONFIGURATION }}
+
+    - name: DEBUG - Show global variables
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"      
+        echo "DEBUG variables from global.yml"
+        echo "*********************************************"
+        echo " "
+        echo "  Configuration variables:"
+        echo "    scandependencies_user= $scandependencies_user"
+        echo "    github_deploymentproject= $github_deploymentproject"
+        echo "    github_gist_path= $github_gist_path"
+        echo "    salesforcesapi_dev= $salesforcesapi_dev"
+        echo "    salesforcesapi_prd= $salesforcesapi_prd"
+        echo " "
+
+    
+    - name: Get configuration parameters for the service
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************************"
+        echo "Get variables from the service configuration file "
+        echo "**************************************************"
+        echo " "
+        pathdata=""
+        function parse_yaml {
+          pathdata=$(cat "$service_name.yml" | yq -r "$1")
+          if [ "$pathdata" = "null" ] ; then
+            echo " The yaml section was not found in the configuration file, section=$1"
+            exit 1
+          fi
+        }
+        
+        echo "  Getting main configuration"
+        parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
+        parse_yaml '.skiptests'; echo "configuration_skiptests=$pathdata" >> $GITHUB_ENV
+        parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
+        parse_yaml ".apptype"; echo "configuration_apptype=$pathdata" >> $GITHUB_ENV
+        parse_yaml ".redeployment-next-environment"; echo "configuration_redeployment_next_environment=$pathdata" >> $GITHUB_ENV
+
+        parse_yaml '.test-properties';
+        substitution_test_properties=$(eval "echo $pathdata")
+        echo "configuration_test_properties=$substitution_test_properties" >> $GITHUB_ENV
+
+        if [ "$deployment_environment" != "build" ] ; then
+          echo "  Getting $deployment_environment configuration"
+          parse_yaml ".$deployment_environment.deployment.name"; echo "configuration_deployment_name=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
+          
+          parse_yaml ".$deployment_environment.cloudhub";
+          substitution_cloudhub=$(eval "echo $pathdata")
+          echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
+        fi
+        echo " "
+     
+
+    - name: Generate environment variables for BAT
+      id: generate-service-env-variables
+      if: ${{ env.deployment_environment != 'build' }}
+      shell: bash
+      run: |
+        echo " "
+        echo "***********************************************"
+        echo "Generate environment variables for BAT         "
+        echo "***********************************************"
+        echo " "
+
+        if [ "$configuration_bat" = "null" ] || [ "$configuration_bat" = "" ] ; then
+          echo "  There are no environment variables for bat!"
+        else
+          service_configuration_lines=$( echo $configuration_bat | tr ' ' '\n' )
+          echo -e "  Configuration formated:\n$service_configuration_lines "
+          echo " "
+
+          echo "  Variables found: "
+          echo "$service_configuration_lines" | while read p; do
+
+            # Get variable and value
+            line=$(echo "$p")
+            name="$(cut -d'=' -f1 <<<$line)"
+            value="$(cut -d'=' -f2 <<< $line)"
+            echo "    - name: "$name
+            echo "      value: "$value
+
+            # Override the value with a possible environment variable
+            value_fromvariable=$(eval "echo $value")
+            echo "      new value: "$value_fromvariable
+            echo "$name=$value_fromvariable" >> $GITHUB_ENV
+          done          
+        fi
+        echo " "
+
+    - name: DEBUG - Show variables
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************************"      
+        echo "DEBUG show variables for service in environment: $deployment_environment"
+        echo "*********************************************************"
+        echo " "
+        echo "Configuration variables:"
+        echo "  configuration_settings= "$configuration_settings
+        echo "  configuration_skiptests= "$configuration_skiptests          
+        echo "  configuration_environments= "$configuration_environments
+        echo "  configuration_apptype= "$configuration_apptype
+        echo "  configuration_redeployment_next_environment= "$configuration_redeployment_next_environment
+        echo "  configuration_test_properties= $configuration_test_properties"
+        echo "  configuration_deployment_name= "$configuration_deployment_name
+        echo "  configuration_deployment_organization= "$configuration_deployment_organization
+        echo "  configuration_deployment_host= "$configuration_deployment_host
+        echo "  configuration_deployment_customlogger= "$configuration_deployment_customlogger
+        echo "  configuration_deployment_type= "$configuration_deployment_type
+        echo "  configuration_cloudhub= $configuration_cloudhub"
+        echo "BAT variables:"
+        echo "  salesforcesapi= "$salesforcesapi
+        echo " "

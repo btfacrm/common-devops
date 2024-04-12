@@ -5,13 +5,26 @@
 name: Debug
 on:
   workflow_call:
-  
 jobs:
-
   Debug:
-
     name: Debug
     runs-on: ubuntu-latest
+    
+    # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      id-token: write
+      issues: write
+      discussions: write
+      packages: write
+      pages: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
 
     # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     #permissions:
@@ -31,30 +44,6 @@ jobs:
 
     steps:
 
-      - name: DEBUG variables
-        shell: bash
-        run: |
-          echo " "
-          echo "*********************************************"      
-          echo "DEBUG variables"
-          echo "*********************************************"
-          echo " "
-
-          tempvar1=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}" | sed 's/./& /g' )
-          tempvar2=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}" | sed 's/./& /g' )
-          tempvar3=$( echo "${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}" | sed 's/./& /g' )
-          echo "  Variables:"
-          echo "    BTFACRM_GITHUB_AUTOMATIONBOT_APPID: $tempvar1"
-          echo "    BTFACRM_GITHUB_AUTOMATIONBOT_PEM: $tempvar2"
-          echo "    BTFACRM_GITHUB_AUTOMATIONBOT_KEY: $tempvar3"
-
-      #- name: Create a GitHub App installation access token
-      #  uses: actions/create-github-app-token@v1
-      #  id: app-token
-      #  with:
-      #    app-id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
-      #    private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
-
       - name: Create a GitHub App installation access token
         uses: peter-murray/workflow-application-token-action@v3
         id: app-token
@@ -70,6 +59,73 @@ jobs:
           echo "Verify App token"
           echo "***********************************************"
           echo " "
-          echo " App token: ${{ steps.app-token.outputs.token }}"
+          echo "  App token: ${{ steps.app-token.outputs.token }}"
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+          echo " "
 
+          - name: Get secrets from Github
+          uses: kanga333/variable-mapper@master
+          with:
+            key: "master"
+            map: |
+              {
+                "master": {
+                    "btfacrm_anypoint_environment_dev_clientid": "${{ secrets.BTFACRM_ANYPOINT_ENVIRONMENT_DEV_CLIENTID }}",
+                    "btfacrm_anypoint_environment_dev_secret": "${{ secrets.BTFACRM_ANYPOINT_ENVIRONMENT_DEV_SECRET }}",
+                    "btfacrm_anypoint_environment_prd_clientid": "${{ secrets.BTFACRM_ANYPOINT_ENVIRONMENT_PRD_CLIENTID }}",
+                    "btfacrm_anypoint_environment_prd_secret": "${{ secrets.BTFACRM_ANYPOINT_ENVIRONMENT_PRD_SECRET }}",
+  
+                    "btfacrm_apisalesforce_dev_clientsecret": "${{ secrets.BTFACRM_APISALESFORCE_DEV_CLIENTSECRET }}",
+                    "btfacrm_apisalesforce_dev_clientid": "${{ secrets.BTFACRM_APISALESFORCE_PRD_CLIENTID }}",
+                    "btfacrm_apisalesforce_prd_clientid": "${{ secrets.BTFACRM_HTTPS_DEV_JKSKEYPASSWORD }}",
+                    "btfacrm_apisalesforce_prd_clientsecret": "${{ secrets.BTFACRM_APISALESFORCE_PRD_CLIENTSECRET }}",
+  
+                    "cicd_connectedapp_clientid": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_CLIENTID }}",
+                    "cicd_connectedapp_secret": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_SECRET }}",
+  
+                    "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
+                    "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
+  
+                    "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
+                    "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
+                    "btfacrm_https_dev_jkskeypassword": "${{ secrets.BTFACRM_HTTPS_DEV_JKSKEYPASSWORD }}",
+                    "btfacrm_https_prd_jkspath": "${{ secrets.BTFACRM_HTTPS_PRD_JKSPATH }}",
+                    "btfacrm_https_prd_jksalias": "${{ secrets.BTFACRM_HTTPS_PRD_JKSALIAS }}",
+                    "btfacrm_https_prd_jkskeypassword": "${{ secrets.BTFACRM_HTTPS_PRD_JKSKEYPASSWORD }}",
+  
+                    "btfacrm_mssql_dev_host": "${{ secrets.BTFACRM_MSSQL_DEV_HOST }}",
+                    "btfacrm_mssql_dev_port": "${{ secrets.BTFACRM_MSSQL_DEV_PORT }}",
+                    "btfacrm_mssql_dev_user": "${{ secrets.BTFACRM_MSSQL_DEV_USER }}",
+                    "btfacrm_mssql_dev_password": "${{ secrets.BTFACRM_MSSQL_DEV_PASSWORD }}",
+                    "btfacrm_mssql_dev_database": "${{ secrets.BTFACRM_MSSQL_DEV_DATABASE }}",
+  
+                    "btfacrm_mssql_prd_host": "${{ secrets.BTFACRM_MSSQL_PRD_HOST }}",
+                    "btfacrm_mssql_prd_port": "${{ secrets.BTFACRM_MSSQL_PRD_PORT }}",
+                    "btfacrm_mssql_prd_user": "${{ secrets.BTFACRM_MSSQL_PRD_USER }}",
+                    "btfacrm_mssql_prd_password": "${{ secrets.BTFACRM_MSSQL_PRD_PASSWORD }}",
+                    "btfacrm_mssql_prd_database": "${{ secrets.BTFACRM_MSSQL_PRD_DATABASE }}",
+  
+                    "mulesoft_nexus_ee_user": "${{ secrets.BTFACRM_MULESOFT_NEXUS_EE_USER }}",
+                    "mulesoft_nexus_ee_password": "${{ secrets.BTFACRM_MULESOFT_NEXUS_EE_PASSWORD }}",
+  
+                    "btfacrm_salesforce_dev_storepassword": "${{ secrets.BTFACRM_SALESFORCE_DEV_STOREPASSWORD }}",
+                    "btfacrm_salesforce_dev_principal": "${{ secrets.BTFACRM_SALESFORCE_DEV_PRINCIPAL }}",
+                    "btfacrm_salesforce_dev_consumerkey": "${{ secrets.BTFACRM_SALESFORCE_DEV_CONSUMERKEY }}",
+                    "btfacrm_salesforce_dev_keystore": "${{ secrets.BTFACRM_SALESFORCE_DEV_KEYSTORE }}",
+                    "btfacrm_salesforce_dev_audienceurl": "${{ secrets.BTFACRM_SALESFORCE_DEV_AUDIENCEURL }}",
+                    "btfacrm_salesforce_dev_tokenendpoint": "${{ secrets.BTFACRM_SALESFORCE_DEV_TOKENENDPOINT }}",
+                    "btfacrm_salesforce_dev_certificatealias": "${{ secrets.BTFACRM_SALESFORCE_DEV_CERTIFICATEALIAS }}",
+  
+                    "btfacrm_salesforce_prd_storepassword": "${{ secrets.BTFACRM_SALESFORCE_PRD_STOREPASSWORD }}",
+                    "btfacrm_salesforce_prd_principal": "${{ secrets.BTFACRM_SALESFORCE_PRD_PRINCIPAL }}",
+                    "btfacrm_salesforce_prd_consumerkey": "${{ secrets.BTFACRM_SALESFORCE_PRD_CONSUMERKEY }}",
+                    "btfacrm_salesforce_prd_keystore": "${{ secrets.BTFACRM_SALESFORCE_PRD_KEYSTORE }}",
+                    "btfacrm_salesforce_prd_tokenendpoint": "${{ secrets.BTFACRM_SALESFORCE_PRD_TOKENENDPOINT }}",
+                    "btfacrm_salesforce_prd_audienceurl": "${{ secrets.BTFACRM_SALESFORCE_PRD_AUDIENCEURL }}",
+                    "btfacrm_salesforce_prd_certificatealias": "${{ secrets.BTFACRM_SALESFORCE_PRD_CERTIFICATEALIAS }}"
+                }
+              }
+
+      # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
+      - name: Get service configuration
+        uses: btfacrm/common-devops/packages/configuration-servicev4@main

@@ -38,8 +38,8 @@ jobs:
           echo "***********************************************"
           echo "Verify App token"
           echo "***********************************************"
-          echo " "
-          echo " App token: ${{ steps.app-token.outputs.token }}"
+          echo "  "
+          echo "  App token: ${{ steps.app-token.outputs.token }}"
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
 
       - name: Get secrets from Github
