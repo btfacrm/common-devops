@@ -48,12 +48,19 @@ jobs:
           echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_APPID: $tempvar1"
           echo "  Value for BTFACRM_GITHUB_AUTOMATIONBOT_PEM: $tempvar2"
 
+      #- name: Create a GitHub App installation access token
+      #  uses: actions/create-github-app-token@v1
+      #  id: app-token
+      #  with:
+      #    app-id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
+      #    private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
+
       - name: Create a GitHub App installation access token
-        uses: actions/create-github-app-token@v1
+        uses: peter-murray/workflow-application-token-action@v3
         id: app-token
         with:
-          app-id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
-          private-key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
+          application_id: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_APPID }}
+          application_private_key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
 
       - name: Verify app token
         shell: bash
@@ -65,6 +72,7 @@ jobs:
           echo " "
           echo " App token: ${{ steps.app-token.outputs.token }}"
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+          exit 1
 
       - name: Get secrets from Github
         uses: kanga333/variable-mapper@master
