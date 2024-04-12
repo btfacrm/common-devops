@@ -154,6 +154,8 @@ jobs:
           echo " "
           echo "  github.run_number= ${{github.run_number}}"
           echo "  github.run_attempt= ${{github.run_attempt}}"
+          echo "  github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
+
 
           execute_deployment="true"
           if [[ "${{github.run_attempt}}" != "1" ]]; then
@@ -211,7 +213,7 @@ jobs:
             echo "  Next environment to deploy the application: $nextenvironment"
             gh -R "${{ github.repository }}" issue create \
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
-                -a "${{ github.triggering_actor}}" \
+                -a "${{ github.event.issue.assignee.login }}" \
                 -b "The deployment job in $deployment_environment environment triggered this issue" \
                 -l "deployment"
           else
