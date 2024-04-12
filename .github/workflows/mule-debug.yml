@@ -60,7 +60,7 @@ jobs:
         id: app-token
         with:
           application_id: 874519
-          application_private_key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_KEY }}
+          application_private_key: ${{ secrets.BTFACRM_GITHUB_AUTOMATIONBOT_PEM }}
 
       - name: Verify app token
         shell: bash
