@@ -132,6 +132,9 @@ jobs:
         shell: bash
         run: |
           echo "  Content file: ${{ steps.get-badge.outputs.data }}"
+          echo "${{ steps.get-badge.outputs.data }}" > file1.json
+          echo " cat file1.json"
+          echo cat file1.json
 
       - name: Create or update a code badge
         id: create-badge
@@ -145,7 +148,7 @@ jobs:
           repo: badges
           path: file1.json
           method: POST
-          body:  ${{ env.REQUEST_BODY }}
+          body: ${{ fs.readFileSync('file1.json', 'base64') }}
 
       - name: Results badge creation
         if: ${{ failure() }}
