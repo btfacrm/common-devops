@@ -74,39 +74,39 @@ runs:
       with:
         ref: '${{env.deployment_version}}'
 
-    - name: Get configuration from pom.xml
+    - name: Parse pom.xml
       shell: bash
       run: |
         echo " "
         echo "**************************************"
-        echo "Get configuration from pom.xml "
+        echo "Parse pom.xml"
         echo "**************************************"
         echo " "
-        echo "Configuration for environment: $deployment_environment"
+        echo "  Configuration for environment: $deployment_environment"
         echo " "
-        echo "Install XMLStarlet in Ubuntu"
+        echo "  Install XMLStarlet in Ubuntu"
         sudo apt-get install xmlstarlet --fix-missing        
         echo " "
-        echo "xmlstarlet --version"
+        echo "  xmlstarlet --version"
         xmlstarlet --version
         echo " "
-        echo "Get info from pom.xml"
+        echo "  Parse pom.xml"
         servicename=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:name" pom.xml )
         serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
         servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
         serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
         echo " "
-        echo "Create environment variables with pom data"
+        echo "  Create environment variables with pom data"
         echo "service_name=$servicename" >> $GITHUB_ENV
         echo "service_version=$serviceversion" >> $GITHUB_ENV
         echo "service_group=$servicegroup" >> $GITHUB_ENV
         echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
         echo " "
-        echo "Variables generated based on pom.xml:"
-        echo "  service_name= "$servicename
-        echo "  service_version= "$serviceversion          
-        echo "  service_group= "$servicegroup
-        echo "  service_artifact= "$serviceartifact
+        echo "  Variables generated based on pom.xml:"
+        echo "    service_name= "$servicename
+        echo "    service_version= "$serviceversion          
+        echo "    service_group= "$servicegroup
+        echo "    service_artifact= "$serviceartifact
         echo " "
 
     - name: Get configuration files

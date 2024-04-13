@@ -47,3 +47,4 @@ runs:
           # echo "$configurationdata"
           echo "configuration-data=$(echo $configurationdata)" >> $GITHUB_OUTPUT
         done
+        echo " "
