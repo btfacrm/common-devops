@@ -122,10 +122,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{  env.github_automationbot_token }}
         with:
-          route: PUT /repos/{owner}/{repo}/contents/{path}
+          #route: PUT /repos/{owner}/{repo}/contents/{path}
+          route: PUT /repos/btfacrm/badges/contents/file.json
           owner: btfacrm
           repo: badges
-          path: service1/file.json
+          #path: service1/file.json
+          path: file.json
           content: '{"key": "value"}' 
           message: Update service1 file.json
           committer: btfa-automation-bot joaquin.ponte@gmail.com>
