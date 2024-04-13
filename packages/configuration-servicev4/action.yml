@@ -110,7 +110,7 @@ runs:
         echo " "
 
     - name: Get configuration files
-      uses: btfacrm/common-devops/packages/get-file@main
+      uses: btfacrm/common-devops/packages/get-filev2@main
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
 
@@ -121,6 +121,8 @@ runs:
         echo "**************************************"
         echo "Stop processing"
         echo "**************************************"
+        echo " "
+        cat $GLOBAL_CONFIGURATION
         exit 1
 
     - name: Import variables from _global.yml
