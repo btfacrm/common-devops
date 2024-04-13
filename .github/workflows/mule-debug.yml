@@ -153,6 +153,8 @@ jobs:
           repo: badges
           path: file1.json
           method: POST
+          message: test
+          content: ${{ env.content_base64 }}
           body: ${{ env.content_base64 }}
 
       - name: Results badge creation
