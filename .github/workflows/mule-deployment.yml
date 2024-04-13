@@ -9,10 +9,12 @@ on:
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   GLOBAL_CONFIGURATION: _global.yml
+  MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
+
+
   MESSAGE_ASSET_NOT_CONFIGURED: "The mulesoft asset doesn't have any deployment configuration"
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
-  MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
   MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
   MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
   MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
@@ -141,6 +143,12 @@ jobs:
           color: '535597'
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
 
+
+
+      ##################################################################
+      # Issue Management: create, close, add comments
+      ##################################################################
+
       - name: Deployment analysis
         id: deployment-analysis  
         shell: bash
@@ -153,7 +161,6 @@ jobs:
           echo "  github.run_number= ${{github.run_number}}"
           echo "  github.run_attempt= ${{github.run_attempt}}"
           echo "  github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
-
 
           execute_deployment="true"
           if [[ "${{github.run_attempt}}" != "1" ]]; then
@@ -218,3 +225,18 @@ jobs:
             echo "  No more environments to deploy"
           fi
 
+      - name: Close deployment issue
+        id: close-deployment-issue
+        #env:
+        #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #  ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Close deployment issue: ${{ github.event.issue.number }} "
+          echo "***********************************************"
+          echo " "
+          gh issue close ${{ github.event.issue.number }} \
+            -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
+            -r "completed"
