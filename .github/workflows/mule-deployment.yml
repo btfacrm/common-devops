@@ -161,9 +161,7 @@ jobs:
           echo "Close deployment issue: ${{ github.event.issue.number }}"
           echo "***********************************************"
           echo " "
-          output=$(gh issue close ${{ github.event.issue.number }} \
-                  -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
-                  -r "completed" --json)
+          output=$(gh issue close ${{ github.event.issue.number }} -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" -r "completed")
           
           echo "  result: $output"
           if [ $output == *"is already closed"* ]; then
