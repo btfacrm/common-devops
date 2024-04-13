@@ -74,7 +74,6 @@ jobs:
                   "cicd_connectedapp_secret": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_SECRET }}",
 
                   "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
-                  "github_admintasks_accesstoken": "${{ secrets.BTFACRM_GITHUB_ADMINTASKS_ACCESSTOKEN }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
                   "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
@@ -116,7 +115,6 @@ jobs:
               }
             }
           
-      # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
         uses: btfacrm/common-devops/packages/configuration-servicev4@main
       
