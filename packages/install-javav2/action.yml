@@ -1,0 +1,50 @@
+name: 'Install Java for Mulesoft Applications'
+description: 'Install Java for Mulesoft Applications'
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+              
+    - name: Install JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: "$jdk_version"
+        distribution: "$jdk_distribution"
+        #check-latest: true
+        cache: 'maven'
+    
+    - name: Install Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: "$maven_version"
+
+    - name: Get configuration files
+      uses: btfacrm/common-devops/packages/get-filev2@main
+      with:
+        file: "$configuration_settings"
+
+    - name: Maven configuration 
+      id: maven-configuration
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"
+        echo "Maven configuration"
+        echo "*********************************************"
+        echo      
+
+        output=$(echo "$configuration_data" | envsubst)
+        echo "$output" > $HOME/.m2/settings.xml
+
+        temporal=$(cat $HOME/.m2/settings.xml)
+        echo "  Contents of settings.xml : $temporal"
+        echo " "
+        mvn --version

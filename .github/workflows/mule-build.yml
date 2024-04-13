@@ -118,7 +118,7 @@ jobs:
           
       # Environment variable 'github_admintasks_accesstoken' must be configured to run the action
       - name: Get service configuration
-        uses: btfacrm/common-devops/packages/configuration-servicev3@main
+        uses: btfacrm/common-devops/packages/configuration-servicev4@main
       
       - name: Verify if the github tag exists
         if: "!contains(env.service_version, 'snapshot')"
@@ -139,11 +139,19 @@ jobs:
           fi
           echo " "
           
-      - name: Install Java JDK for Mulesoft Applications
-        uses: btfacrm/common-devops/packages/install-java@main
-        with:
-          github-configurations-accesstoken: $github_admintasks_accesstoken
-          default-settings-xml: $configurations_settings
+      - name: Install Java environment for Mulesoft Applications
+        uses: btfacrm/common-devops/packages/install-javav2@main
+
+      - name: Stop pipeline
+        id: stop-pipeline
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Stop pipeline"
+          echo "***************************************"
+          echo " "
+          exit 1
 
       - name: Setup Anypoint Exchange directories
         run: |
