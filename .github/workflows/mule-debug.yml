@@ -143,8 +143,11 @@ jobs:
         with:
           route: POST /repos/btfacrm/badges/contents/file.json
           body:  ${{ toJSON(env.REQUEST_BODY) }}
+          data: |
+            message: my commit message
+            content: This is my content
           mediaType: |
-            format: raw
+              format: raw
 
       - name: Results badge creation
         if: ${{ failure() }}
