@@ -139,13 +139,19 @@ jobs:
           content_base64=$(echo -ne "steps.get-badge.outputs.data" | base64);
           echo "content_base64=$content_base64" >> $GITHUB_ENV
 
-          
+      - name: Create or update JSON file in Repository B
+        run: |
+          curl -X PUT \
+            -H "Authorization: token ${{ env.github_automationbot_token }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"message": "Update JSON file", "content": "'"$(echo -n '{"key": "value"}' | base64)"'", "branch": "main"}' \
+            "https://api.github.com/repos/btfacrm/badges/contents/file1.json"
 
       - name: Create or update a code badge
         id: create-badge
         uses: octokit/request-action@v2.x
         env:
-          GITHUB_TOKEN: ${{  env.github_automationbot_token }}
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
           REQUEST_BODY: |
             {"key": "value"}
         with:
