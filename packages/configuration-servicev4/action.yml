@@ -122,7 +122,7 @@ runs:
         echo "Stop processing"
         echo "**************************************"
         echo " "
-        cat $GLOBAL_CONFIGURATION
+        cat "$GLOBAL_CONFIGURATION"
         exit 1
 
     - name: Import variables from _global.yml
