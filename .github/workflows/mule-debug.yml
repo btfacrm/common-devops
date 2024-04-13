@@ -161,6 +161,7 @@ jobs:
           path: file4.json
           method: POST
           message: test
+          branch: main
           content: ${{ env.content_base64 }}
           body: ${{ env.content_base64 }}
       
