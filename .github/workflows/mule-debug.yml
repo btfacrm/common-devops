@@ -136,6 +136,11 @@ jobs:
           echo " cat file1.json"
           echo cat file1.json
 
+          content_base64=$(echo -ne "steps.get-badge.outputs.data" | base64);
+          echo "content_base64=$content_base64" >> $GITHUB_ENV
+
+          
+
       - name: Create or update a code badge
         id: create-badge
         uses: octokit/request-action@v2.x
@@ -148,7 +153,7 @@ jobs:
           repo: badges
           path: file1.json
           method: POST
-          body: ${{ fs.readFileSync('file1.json', 'base64') }}
+          body: ${{ env.content_base64 }}
 
       - name: Results badge creation
         if: ${{ failure() }}
