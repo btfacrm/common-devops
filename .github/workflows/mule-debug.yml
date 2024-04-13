@@ -117,6 +117,20 @@ jobs:
       - name: Get service configuration
         uses: btfacrm/common-devops/packages/configuration-servicev4@main
 
+      - name: Get file
+        id: get-badge
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{  env.github_automationbot_token }}
+        with:
+          route: GET /repos/btfacrm/badges/contents/file2.json
+          mediaType: |
+            format: raw
+
+      - name: Results get badge
+        shell: bash
+        run: echo "  Content file: ${{ steps.get-badge.outputs.status }}"
+
       - name: Create or update a code badge
         id: create-badge
         uses: octokit/request-action@v2.x
