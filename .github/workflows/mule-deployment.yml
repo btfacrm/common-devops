@@ -227,8 +227,8 @@ jobs:
 
       - name: Close deployment issue
         id: close-deployment-issue
-        #env:
-        #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         #  ISSUE: ${{ github.event.issue.html_url }}
         shell: bash
         run: |
