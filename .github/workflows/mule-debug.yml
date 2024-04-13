@@ -5,6 +5,11 @@
 name: Debug
 on:
   workflow_call:
+
+env:
+  CONFIGURATIONS_REPOSITORY: common-configurations
+  GLOBAL_CONFIGURATION: _global.yml
+  
 jobs:
   Debug:
     name: Debug
