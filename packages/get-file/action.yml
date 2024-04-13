@@ -23,7 +23,8 @@ runs:
         echo "Get configuration file"
         echo "*********************************************"
         echo " "
-        echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
+        echo "github_automationbot_token: $github_automationbot_token"
+        #echo "github_admintasks_accesstoken: $github_admintasks_accesstoken"
         echo "inputs.file: ${{ inputs.file }}"
         listFiles="${{ inputs.file }}"
         for readFile in $listFiles
@@ -32,7 +33,8 @@ runs:
           echo "  Getting the file: $readFile"
           urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$readFile"
           echo "  URL of file: $urlconfigurationfile"
-          configurationdata=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
+          #configurationdata=$(curl -sH "Authorization: token $github_admintasks_accesstoken" $urlconfigurationfile)
+          configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
 
           # Verify if configuration file was found
           if [[ $configurationdata != *"Not Found"* ]]; then
