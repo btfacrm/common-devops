@@ -129,7 +129,8 @@ jobs:
 
       - name: Results get badge
         shell: bash
-        run: echo "  Content file: ${{ steps.get-badge.outputs.status }}"
+        run: |
+          echo "  Content file: ${{ steps.get-badge.outputs.status }}"
 
       - name: Create or update a code badge
         id: create-badge
