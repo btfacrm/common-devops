@@ -165,10 +165,12 @@ jobs:
                   -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
                   -r "completed" )
           
-          if [[ $string == *"is already closed"* ]]; then
+          if [[ $output == *"is already closed"* ]]; then
             echo "  Add comment to the issue"
             gh issue comment ${{ github.event.issue.number }} \
               -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}"           
+          else
+            echo "  The deployment issue was closed"
           fi
           echo " "
 
