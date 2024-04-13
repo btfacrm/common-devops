@@ -4,11 +4,11 @@ inputs:
   file: 
     required: true
     description: File to download
+  checkIfExists:
+    required: false
+    description: Verify if file exists
+    default: 'false'
 
-outputs:
-  configuration-data:
-    description: "The contents of the configuration file"
-    value: ${{ steps.configuration.outputs.configuration-data }}
 runs:
   using: "composite"
   steps:
@@ -17,7 +17,6 @@ runs:
       name: Get configuration for the service 
       shell: bash
       run: |
-
         echo " "
         echo "*********************************************"
         echo "Get configuration file"
@@ -39,12 +38,17 @@ runs:
             echo "  The file was found"
             echo "$configurationdata" > $readFile
           else
-            echo "  File not found, returning an empty file"
-            touch $readFile
+            if [[ ${{ inputs.checkIfExists }} == "true" ]]; then
+              echo "  File not found, aborting the pipeline"
+              exit 1
+            else
+              echo "  File not found, returning an empty file"
+              touch $readFile
+            fi
           fi
 
           echo "  Set the output of the action with the value of the file"
           # echo "$configurationdata"
-          echo "configuration_data=$(echo $configurationdata)" >> $GITHUB_OUTPUT
+          echo "configuration_data=$(echo $configurationdata)" >> $GITHUB_ENV
         done
         echo " "
