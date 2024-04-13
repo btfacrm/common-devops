@@ -234,10 +234,10 @@ jobs:
         run: |
           echo " "
           echo "***********************************************"
-          echo "Close deployment issue: ${{ github.event.issue.number }} "
+          echo "Close deployment issue: ${{ github.event.issue.number }}, state: ${{ github.event.issue.state }}"
           echo "***********************************************"
           echo " "
-          if [ "${{ github.event.issue.state }}" == "closed" ]; then
+          if [[ "${{ github.event.issue.state }}" == "closed" ]]; then
             gh issue comment ${{ github.event.issue.number }} \
               -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" 
           else
