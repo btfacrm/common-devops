@@ -16,15 +16,15 @@ runs:
     - name: Install JDK
       uses: actions/setup-java@v3
       with:
-        java-version: "$jdk_version"
-        distribution: "$jdk_distribution"
+        java-version: ${{ env.jdk_version }} 
+        distribution: ${{ env.jdk_distribution }}
         #check-latest: true
         cache: 'maven'
     
     - name: Install Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: "$maven_version"
+        maven-version: ${{ env.maven_version }}
 
     - name: Get configuration files
       uses: btfacrm/common-devops/packages/get-filev2@main
