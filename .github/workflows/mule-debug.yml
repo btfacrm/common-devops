@@ -9,28 +9,12 @@ on:
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   GLOBAL_CONFIGURATION: _global.yml
-  
+
 jobs:
   Debug:
     name: Debug
     runs-on: ubuntu-latest
     
-    # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      id-token: write
-      issues: write
-      discussions: write
-      packages: write
-      pages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
-
     # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     #permissions:
     #  actions: write
