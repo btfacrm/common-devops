@@ -114,17 +114,6 @@ runs:
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
 
-    - name: Stop processing
-      shell: bash
-      run: |
-        echo " "
-        echo "**************************************"
-        echo "Stop processing"
-        echo "**************************************"
-        echo " "
-        cat "$GLOBAL_CONFIGURATION"
-        exit 1
-
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
       with:
