@@ -137,13 +137,14 @@ jobs:
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{  env.github_automationbot_token }}
+          REQUEST_BODY: |
+            Multi-line string with *special* characters:
+            - "'`
         with:
           route: POST /repos/btfacrm/badges/contents/file.json
-          content: '{"key": "value"}' 
+          body:  ${{ toJSON(env.REQUEST_BODY) }}
           mediaType: |
             format: raw
-
-
 
       - name: Results badge creation
         if: ${{ failure() }}
