@@ -144,8 +144,8 @@ jobs:
           owner: btfacrm
           repo: badges
           path: file1.json
-          method: PUT
-          body:  ${{ toJSON(env.REQUEST_BODY) }}
+          method: POST
+          body:  ${{ env.REQUEST_BODY }}
 
       - name: Results badge creation
         if: ${{ failure() }}
