@@ -18,7 +18,7 @@ runs:
         #
         echo " "
         echo "*****************************************************"
-        echo "Debug dump GitHub context "
+        echo "Debug dump GitHub context - V4 "
         echo "*****************************************************"
         echo " "
         echo "$GITHUB_CONTEXT"
@@ -113,6 +113,15 @@ runs:
       uses: btfacrm/common-devops/packages/get-file@main
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
+
+    - name: Stop processing
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Stop processing"
+        echo "**************************************"
+        exit 1
 
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
