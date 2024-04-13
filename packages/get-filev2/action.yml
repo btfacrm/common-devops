@@ -44,6 +44,6 @@ runs:
           fi
 
           echo "  Set the output of the action with the value of the file"
-          # echo "$configurationdata"
+          echo "$configurationdata"
           echo "configuration-data=$(echo $configurationdata)" >> $GITHUB_OUTPUT
         done
