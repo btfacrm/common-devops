@@ -29,8 +29,7 @@ runs:
     - name: Get configuration files
       uses: btfacrm/common-devops/packages/get-filev2@main
       with:
-        #file: "$configuration_settings"
-        file: "settings_yyy.xml"
+        file: "$configuration_settings"
         checkIfExists: true
 
     - name: Maven configuration 
