@@ -148,7 +148,9 @@ jobs:
 
       - name: Results badge creation
         if: ${{ failure() }}
-        run: "echo status ${{ steps.create-badge.outputs.status }}"
-        run: "echo headers ${{ steps.create-badge.outputs.headers }}"
+        shell: bash
+        run: |
+          echo "  status: ${{ steps.create-badge.outputs.status }}"
+          echo "  headers: ${{ steps.create-badge.outputs.headers }}"
 
           
