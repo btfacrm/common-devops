@@ -119,12 +119,13 @@ jobs:
 
       - name: Create or update file in Repository B
         uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{  env.github_automationbot_token }}
         with:
-          route: PUT /repos/:owner/:repo/contents/:path
+          route: PUT /repos/{owner}/{repo}/contents/{path}
           owner: btfacrm
-          repo: btfacrm/badges
+          repo: badges
           path: service1/file.json
-          token: ${{ env.github_automationbot_token }}
-          content: '{"key": "value"}' # Replace with your JSON content
+          content: '{"key": "value"}' 
           message: Update service1 file.json
           committer: btfa-automation-bot joaquin.ponte@gmail.com>
