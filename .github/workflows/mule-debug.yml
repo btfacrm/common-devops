@@ -146,8 +146,7 @@ jobs:
           data: |
             message: my commit message
             content: This is my content
-          mediaType: |
-              format: raw
+          mediaType: application/vnd.github.v3+json
 
       - name: Results badge creation
         if: ${{ failure() }}
