@@ -141,12 +141,11 @@ jobs:
           REQUEST_BODY: |
             {"key": "value"}
         with:
-          route: POST /repos/btfacrm/badges/contents/file.json
+          owner: btfacrm
+          repo: badges
+          path: file1.json
+          method: PUT
           body:  ${{ toJSON(env.REQUEST_BODY) }}
-          data: |
-            message: my commit message
-            content: This is my content
-          mediaType: application/vnd.github.v3+json
 
       - name: Results badge creation
         if: ${{ failure() }}
