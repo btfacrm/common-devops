@@ -117,7 +117,8 @@ jobs:
       - name: Get service configuration
         uses: btfacrm/common-devops/packages/configuration-servicev4@main
 
-      - name: Create or update file in Repository B
+      - name: Create or update a code badge
+        id: create-badge
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{  env.github_automationbot_token }}
@@ -129,5 +130,10 @@ jobs:
           #path: service1/file.json
           path: file.json
           content: '{"key": "value"}' 
-          message: Update service1 file.json
-          committer: btfa-automation-bot joaquin.ponte@gmail.com>
+          #message: Update service1 file.json
+          #committer: btfa-automation-bot joaquin.ponte@gmail.com>
+
+      - name: Results badge creation
+        if: ${{ failure() }}
+        run: "echo Release could not be found. Request failed with status '${{ steps.create-badge.outputs.status }}'"
+          
