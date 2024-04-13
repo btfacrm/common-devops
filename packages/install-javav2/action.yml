@@ -39,8 +39,9 @@ runs:
         echo "*********************************************"
         echo "Maven configuration"
         echo "*********************************************"
-        echo      
-
+        echo " "   
+        echo "  Temporal settings.xml: $configuration_data"
+        echo " "
         output=$(echo "$configuration_data" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
 
