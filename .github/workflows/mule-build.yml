@@ -142,17 +142,6 @@ jobs:
       - name: Install Java environment for Mulesoft Applications
         uses: btfacrm/common-devops/packages/install-javav2@main
 
-      - name: Stop pipeline
-        id: stop-pipeline
-        shell: bash
-        run: |
-          echo " "
-          echo "***************************************"
-          echo "Stop pipeline"
-          echo "***************************************"
-          echo " "
-          exit 1
-
       - name: Setup Anypoint Exchange directories
         run: |
           echo " "
@@ -204,8 +193,6 @@ jobs:
       - name: Summary - Code Coverage
         uses: btfacrm/common-devops/packages/summary-codecoverage@main
       
-
-
       #########################################################
       # Next actions only if application is not a snapshot
       #########################################################
