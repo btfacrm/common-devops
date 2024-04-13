@@ -149,6 +149,30 @@ jobs:
       # Issue Management: create, close, add comments
       ##################################################################
 
+      - name: Close deployment issue
+        id: close-deployment-issue
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Close deployment issue: ${{ github.event.issue.number }}, state: ${{ github.event.issue.state }}"
+          echo "***********************************************"
+          echo " "
+          if [[ "${{ github.event.issue.state }}" == "closed" ]]; then
+            echo "  Add comment to the issue"
+            gh issue comment ${{ github.event.issue.number }} \
+              -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" 
+          else
+            echo "  Close the issue"
+            gh issue close ${{ github.event.issue.number }} \
+              -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
+              -r "completed"
+          fi
+          echo " "
+          
       - name: Deployment analysis
         id: deployment-analysis  
         shell: bash
@@ -225,26 +249,3 @@ jobs:
             echo "  No more environments to deploy"
           fi
 
-      - name: Close deployment issue
-        id: close-deployment-issue
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        #  ISSUE: ${{ github.event.issue.html_url }}
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Close deployment issue: ${{ github.event.issue.number }}, state: ${{ github.event.issue.state }}"
-          echo "***********************************************"
-          echo " "
-          if [[ "${{ github.event.issue.state }}" == "closed" ]]; then
-            echo "  Add comment to the issue"
-            gh issue comment ${{ github.event.issue.number }} \
-              -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" 
-          else
-            echo "  Close the issue"
-            gh issue close ${{ github.event.issue.number }} \
-              -c "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}" \
-              -r "completed"
-          fi
-          echo " "
