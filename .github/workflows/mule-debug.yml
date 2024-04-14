@@ -118,50 +118,11 @@ jobs:
       - name: Get service configuration
         uses: btfacrm/common-devops/packages/configuration-servicev4@main
 
-      - name: Get file
-        id: get-badge
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{  env.github_automationbot_token }}
+      - name: Create badge for deployment
+        uses: btfacrm/common-devops/packages/badgev2@main
         with:
-          route: GET /repos/btfacrm/badges/contents/file2.json
-          mediaType: |
-            format: raw
-
-      - name: Results get badge
-        shell: bash
-        run: |
-          echo "  Content file: ${{ steps.get-badge.outputs.data }}"
-          echo "${{ steps.get-badge.outputs.data }}" > file1.json
-          echo " cat file1.json"
-          echo cat file1.json
-
-          content_base64=$(echo -ne "steps.get-badge.outputs.data" | base64);
-          echo "content_base64=$content_base64" >> $GITHUB_ENV
-          echo "  content_base64=$content_base64"
-
-      - name: Create or update JSON file in Repository B
-        run: |
-          curl -X PUT \
-            -H "Authorization: token ${{ env.github_automationbot_token }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{"message": "Update JSON file3", "content": "'"$content_base64"'", "branch": "main"}' \
-            "https://api.github.com/repos/btfacrm/badges/contents/file3.json"
-
-      - name: Create or update a code badge
-        id: create-badge
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-          REQUEST_BODY: |
-            {"key": "value"}
-        with:
-          owner: btfacrm
-          repo: badges
-          path: file4.json
-          method: POST
-          message: test
-          branch: main
-          content: ${{ env.content_base64 }}
-          body: ${{ env.content_base64 }}
-      
+          label: '${{ env.deployment_environment }} version'
+          status: '${{ env.deployment_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
+          folder: ${{ env.service_name }}

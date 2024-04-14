@@ -24,7 +24,6 @@ runs:
         echo "$GITHUB_CONTEXT"
         echo " "
 
-        
     - name: Get from github context the build or deployment data
       shell: bash
       run: |
