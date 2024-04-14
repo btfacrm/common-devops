@@ -50,8 +50,11 @@ runs:
         echo "  Owner : ${{ github.repository_owner }}"
         echo " "
         echo "  Get the badge file as base64"
-        content_base64=$(cat "${{ inputs.file }}" | base64);
         cat "${{ inputs.file }}"
+
+        content_base64=$(cat ${{ inputs.file }});
+        content_base64=$(echo -n $content_base64 | base64)
+        echo " "
         echo "  content_base64=$content_base64"
         
         #url="https://api.github.com/repos/${{github.repository_owner}}/$badge_repository/contents/${{ inputs.folder }}/${{ inputs.file }}"
@@ -61,7 +64,6 @@ runs:
             -H "Authorization: token ${{ env.github_automationbot_token }}" \
             $url)
         echo "  github_file: $file_details"
-
 
         if [[ $file_details == *"Not Found"* ]]; then
           echo "  Create badge"
