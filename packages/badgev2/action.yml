@@ -47,10 +47,11 @@ runs:
         echo "*****************************************************"
         echo " "
         echo "  Get the badge file as base64"
-        content_base64=$(echo -ne "steps.get-badge.outputs.data" | base64);
+        content_base64=$(echo -ne "${{ inputs.file }}" | base64);
         echo "  content_base64=$content_base64"
         
-        url="https://api.github.com/repos/${{ env.GITHUB_REPOSITORY_OWNER }}/$badge_repository/contents/${{ inputs.folder }}/${{ inputs.file }}"
+        #url="https://api.github.com/repos/${{ env.GITHUB_REPOSITORY_OWNER }}/$badge_repository/contents/${{ inputs.folder }}/${{ inputs.file }}"
+        url="https://api.github.com/repos/${{ env.GITHUB_REPOSITORY_OWNER }}/$badge_repository/contents/${{ inputs.file }}"
         echo "  url: $url"
         file_details=$(curl -s -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ env.github_automationbot_token }}" \
