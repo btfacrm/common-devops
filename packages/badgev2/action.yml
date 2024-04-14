@@ -46,7 +46,7 @@ runs:
         echo "Upload badge"
         echo "*****************************************************"
         echo " "
-        url="https://api.github.com/repos/${{ GITHUB_REPOSITORY_OWNER }}/$badge_repository/contents/${{ inputs.folder }}/${{ inputs.file }}"
+        url="https://api.github.com/repos/${{ env.GITHUB_REPOSITORY_OWNER }}/$badge_repository/contents/${{ inputs.folder }}/${{ inputs.file }}"
         echo "  url: $url"
         file_sha=$(curl -s -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ env.github_automationbot_token }}" \
