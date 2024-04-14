@@ -55,9 +55,9 @@ runs:
         file_details=$(curl -s -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ env.github_automationbot_token }}" \
             $url)
-        echo "  sha: $file_details"
+        echo "  github_file: $file_details"
 
-        if [[ $file_details != *"Not Found"* ]]; then
+        if [[ $file_details == *"Not Found"* ]]; then
           echo "  Create badge"
           message="Create badge ${{ inputs.folder }}/${{ inputs.file }}"
 
