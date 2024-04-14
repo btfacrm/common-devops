@@ -53,7 +53,8 @@ runs:
         cat "${{ inputs.file }}"
 
         content_base64=$(cat ${{ inputs.file }});
-        content_base64=$(echo -n $content_base64 | base64)
+        #content_base64=$(echo -n $content_base64 | base64)
+        content_base64="VGhpcyBpcyBhIHRlc3QgYW5kIEkgd2FudCB0byBzZWUgaWYgZXZlcnl0aGluZyBpcyB3b3JraW5nIGdyZWF0"
         echo " "
         echo "  content_base64=$content_base64"
         
