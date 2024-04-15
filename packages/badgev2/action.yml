@@ -30,14 +30,14 @@ runs:
         echo "*****************************************************"
         echo " "            
 
-    - name: Create badge
-      id: create-badge
-      uses: emibcn/badge-action@master
-      with:
-        label: ${{ inputs.label }}
-        status: ${{ inputs.status }}
-        color: ${{ inputs.color }}
-        path: ${{ inputs.file }}
+    #- name: Create badge
+    #  id: create-badge
+    #  uses: emibcn/badge-action@master
+    #  with:
+    #    label: ${{ inputs.label }}
+    #    status: ${{ inputs.status }}
+    #    color: ${{ inputs.color }}
+    #    path: ${{ inputs.file }}
     
     - name: Debug message
       shell: bash
@@ -50,14 +50,19 @@ runs:
         echo "  Get the badge file as base64"
 
         echo " "
-        echo "  badge: ${{ steps.create-badge.outputs.badge }}"
+        #echo "  badge: ${{ steps.create-badge.outputs.badge }}"
 
         #content_base64=$(cat ${{ inputs.file }});
         #content_base64=$(echo -n $content_base64 | base64)
         #content_base64="VGhpcyBpcyBhIHRlc3QgYW5kIEkgd2FudCB0byBzZWUgaWYgZXZlcnl0aGluZyBpcyB3b3JraW5nIGdyZWF0"
         #content_base64=$(printf '%s' "$(< ${{ inputs.file }})" | base64)
         #content_base64=$(cat ${{ inputs.file }} | tr -d '\r' | base64)
-        content_base64=$(echo "${{ steps.create-badge.outputs.badge }}" | tr -d '\r' | base64)
+        #content_base64=$(echo "${{ steps.create-badge.outputs.badge }}" | tr -d '\r' | base64)
+
+        # TEST, create our code badge
+        curl -o ${{ inputs.file }} "https://img.shields.io/static/v1?label=code%20repository&message=my%20repository&color=blue"
+        content_base64=$(cat ${{ inputs.file }} | tr -d '\r' | base64)
+        cat ${{ inputs.file }}
 
         echo " "
         echo "  content_base64=$content_base64"
