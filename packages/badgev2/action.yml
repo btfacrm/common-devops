@@ -20,38 +20,26 @@ inputs:
 runs:
   using: "composite"
   steps:
-
-    - name: Debug message
-      shell: bash
-      run: |
-        echo " "
-        echo "*****************************************************"
-        echo "Create badge"
-        echo "*****************************************************"
-        echo " "            
-
-    #- name: Create badge
-    #  id: create-badge
-    #  uses: emibcn/badge-action@master
-    #  with:
-    #    label: ${{ inputs.label }}
-    #    status: ${{ inputs.status }}
-    #    color: ${{ inputs.color }}
-    #    path: ${{ inputs.file }}
     
-    - name: Debug message
+    - name: Create code badge
       shell: bash
       run: |
         echo " "
         echo "*****************************************************"
-        echo "Upload badge"
+        echo "Create code badge"
         echo "*****************************************************"
         echo " "
-        echo "  Get the badge file as base64"
+        echo "  Create the badge file and get it as base64"
         echo " "
 
-        #curl -o ${{ inputs.file }} "https://img.shields.io/static/v1?label=code%20repository&message=my%20repository&color=blue" && truncate -s -1 ${{ inputs.file }} && echo ">" >> ${{ inputs.file }}
-        curl -o ${{ inputs.file }} "https://img.shields.io/static/v1?label=code%20repository&message=my%20repository&color=blue" && echo " " >> ${{ inputs.file }}
+        curl -o ${{ inputs.file }} --verbose --get \
+          --data-urlencode 'label=${{ inputs.label }}' \
+          --data-urlencode 'message=${{ inputs.status }}?' \
+          --data-urlencode 'color=${{ inputs.color }}' \
+        'https://img.shields.io/static/v1'
+        echo " " >> ${{ inputs.file }}
+
+        #curl -o ${{ inputs.file }} "https://img.shields.io/static/v1?label=code%20repository&message=my%20repository&color=blue" && echo " " >> ${{ inputs.file }}
         content_base64=$(base64 -w 0 ${{ inputs.file }})
         cat ${{ inputs.file }}
 
