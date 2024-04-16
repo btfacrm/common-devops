@@ -232,6 +232,7 @@ jobs:
           status: '${{ github.run_number }}'
           color: '535597'
           file: ${{ env.service_name }}-wf.svg
+          folder: ${{ env.service_name }}
       
       - name: Create badge release only for jar files
         uses: btfacrm/common-devops/packages/badgev2@main
@@ -241,6 +242,7 @@ jobs:
           status: '${{ env.service_version }}'
           color: '535597'
           file: ${{ env.service_name }}-re.svg
+          folder: ${{ env.service_name }}
 
       - name: Create a deployment issue
         id: create-deployment-issue  

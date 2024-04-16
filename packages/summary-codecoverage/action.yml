@@ -111,7 +111,8 @@ runs:
         echo "*****************************************************"
         echo "Code coverage - Set badge color and status"
         echo "*****************************************************"
-        echo " "      
+        echo " "
+        
         coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         coverage=${coverage_float%.*}
         minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
@@ -148,6 +149,4 @@ runs:
         status: ${{ env.BADGE_STATUS }}
         color: ${{ env.BADGE_COLOR }}
         file: ${{ env.service_name }}-cc.svg
-
-
-
+        folder: ${{ env.service_name }}

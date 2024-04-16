@@ -67,6 +67,7 @@ runs:
             echo "BADGE_COLOR=696969" >> $GITHUB_ENV
             ;;
         esac
+        echo " "
 
     - name: Badge for skipped tests
       if: ${{ hashFiles(inputs.path-report) == '' }}
@@ -79,6 +80,7 @@ runs:
         echo " "
         echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
+        echo " "
 
     - name: Publish - MUnit Report
       if: ${{ hashFiles(inputs.path-report) != '' }}
@@ -95,3 +97,4 @@ runs:
         status: '${{ env.BADGE_STATUS }}'
         color: ${{ env.BADGE_COLOR }}
         file: ${{ env.service_name }}-${{inputs.badge-suffix}}.svg
+        folder: ${{ env.service_name }}

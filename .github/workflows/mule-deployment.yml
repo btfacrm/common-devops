@@ -141,6 +141,7 @@ jobs:
           status: '${{ env.deployment_version }}'
           color: '535597'
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
+          folder: ${{ env.service_name }}
 
 
 
