@@ -39,7 +39,6 @@ runs:
           'https://img.shields.io/static/v1'
         echo " " >> ${{ inputs.file }}
 
-        #curl -o ${{ inputs.file }} "https://img.shields.io/static/v1?label=code%20repository&message=my%20repository&color=blue" && echo " " >> ${{ inputs.file }}
         content_base64=$(base64 -w 0 ${{ inputs.file }})
         cat ${{ inputs.file }}
 
