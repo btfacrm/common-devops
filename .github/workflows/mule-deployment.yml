@@ -165,14 +165,17 @@ jobs:
 
           if [[ ${{ steps.deployment-ch1.outputs.outcome }} != "success" ]]; then
             echo "  There was a problem in the deployment, closing issue with internal error "
+            gh issue comment ${{ github.event.issue.number }} \
+              -b "${{ env.MESSAGE_SERVICE_INTERNAL_ERROR }}"
+
             gh issue close ${{ github.event.issue.number }} \
-              -c "${{ env.MESSAGE_SERVICE_INTERNAL_ERROR }}" \
               -r "not planned"
           else
             gh issue comment ${{ github.event.issue.number }} \
-            -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}"
+              -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}"
 
-            gh issue close ${{ github.event.issue.number }} -r "completed"
+            gh issue close ${{ github.event.issue.number }} \
+              -r "completed"
             echo " "
 
             echo "***********************************************"
