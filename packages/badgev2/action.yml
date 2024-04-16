@@ -36,7 +36,7 @@ runs:
           --data-urlencode 'label=${{ inputs.label }}' \
           --data-urlencode 'message=${{ inputs.status }}?' \
           --data-urlencode 'color=${{ inputs.color }}' \
-        'https://img.shields.io/static/v1'
+          'https://img.shields.io/static/v1'
         echo " " >> ${{ inputs.file }}
 
         #curl -o ${{ inputs.file }} "https://img.shields.io/static/v1?label=code%20repository&message=my%20repository&color=blue" && echo " " >> ${{ inputs.file }}
