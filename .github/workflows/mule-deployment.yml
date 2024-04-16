@@ -237,7 +237,8 @@ jobs:
                 -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
                 -a "${{ github.event.issue.assignee.login }}" \
                 -b "The deployment job in $deployment_environment environment triggered this issue" \
-                -l "deployment"
+                -l "deployment" \
+                -p "${{ env.deployment_project }}"
           else
             echo "  No more environments to deploy"
           fi
