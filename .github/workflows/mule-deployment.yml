@@ -10,9 +10,9 @@ env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   GLOBAL_CONFIGURATION: _global.yml
   MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
-
-
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
+
+
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
   MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
   MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
@@ -118,7 +118,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Debug show root files
-        id: debug-workplace
+        id: debug-show-root-files
         shell: bash
         run: |
           echo " "
@@ -128,11 +128,11 @@ jobs:
           echo " "
           ls -l
 
-#      - name: Deploy the service in the Cloudhub1 
-#        id: deployment-ch1
-#        uses: btfacrm/common-devops/packages/process-cloudhub1v2@main
-#        with:
-#          deployment-env: ${{ env.deployment_environment }}
+      - name: Deploy the service in the Cloudhub1 
+        id: deployment-ch1
+        uses: btfacrm/common-devops/packages/process-cloudhub1v2@main
+        with:
+          deployment-env: ${{ env.deployment_environment }}
 
       - name: Create badge for deployment
         uses: btfacrm/common-devops/packages/badgev2@main
@@ -143,104 +143,104 @@ jobs:
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
           folder: ${{ env.service_name }}
 
-
-
-      ##################################################################
+      #################################################################
       # Issue Management: create, close, add comments
-      ##################################################################
-
-      - name: Close deployment issue
-        id: close-deployment-issue
+      #################################################################
+      - name: Issue management
+        id: issue-management
+        if: always()
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-          ISSUE: ${{ github.event.issue.html_url }}
         shell: bash
         run: |
           echo " "
           echo "***********************************************"
-          echo "Close deployment issue: ${{ github.event.issue.number }}"
+          echo "Issue Management: create, close, add comments"
+          echo "  ${{ github.event.issue.html_url }}"
           echo "***********************************************"
           echo " "
-          gh issue comment ${{ github.event.issue.number }} \
-          -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}"
-
-          gh issue close ${{ github.event.issue.number }} -r "completed"
+          echo "  Current environment: $deployment_environment, from: $configuration_environments"
+          echo "  Deployment status -> steps.deployment-ch1.outputs.outcome=${{ steps.deployment-ch1.outputs.outcome }}"
           echo " "
 
-      - name: Deployment analysis
-        id: deployment-analysis  
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Deployment analysis"
-          echo "***********************************************"
-          echo " "
-          echo "  github.run_number= ${{github.run_number}}"
-          echo "  github.run_attempt= ${{github.run_attempt}}"
-          echo "  github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
+          if [[ ${{ steps.deployment-ch1.outputs.outcome }} != "success" ]]; then
+            echo "  There was a problem in the deployment, closing issue with internal error "
+            gh issue close ${{ github.event.issue.number }} \
+              -c "${{ env.MESSAGE_SERVICE_INTERNAL_ERROR }}" \
+              -r "not planned"
+          else
+            gh issue comment ${{ github.event.issue.number }} \
+            -b "${{ env.MESSAGE_SERVICE_SUCCESS_DEPLOYED }}"
 
-          execute_deployment="true"
-          if [[ "${{github.run_attempt}}" != "1" ]]; then
-            echo "  The workflow was re-run"
-            if [[ "$configuration_redeployment_next_environment" == "false" ]]; then
-              execute_deployment="false"
-              echo " "
-              echo "  Service won't be deployed to the next environment,redeployment-next-environment= $configuration_redeployment_next_environment"
+            gh issue close ${{ github.event.issue.number }} -r "completed"
+            echo " "
+
+            echo "***********************************************"
+            echo "Deployment analysis"
+            echo "***********************************************"
+            echo " "
+            echo "  github.run_number= ${{github.run_number}}"
+            echo "  github.run_attempt= ${{github.run_attempt}}"
+            echo "  github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
+  
+            execute_deployment="true"
+            if [[ "${{github.run_attempt}}" != "1" ]]; then
+              echo "  The workflow was re-run"
+              if [[ "$configuration_redeployment_next_environment" == "false" ]]; then
+                execute_deployment="false"
+                echo " "
+                echo "  Service won't be deployed to the next environment,redeployment-next-environment= $configuration_redeployment_next_environment"
+              
+              else
+                echo "  The service it is a candiate for deployment in next environment, configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
+              fi
             else
-              echo "  The service it is a candiate for deployment in next environment, configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
+              echo "  This is the first time the workflow is running, it is a candidate to be deployed to the next environment"
             fi
-          else
-            echo "  This is the first time the workflow is running, it is a candidate to be deployed to the next environment"
-          fi
-          echo "execute_deployment=$execute_deployment" >> $GITHUB_ENV
-          echo " "
 
-      - name: Create a deployment issue
-        id: create-deployment-issue
-        if: "env.execute_deployment == 'true'"
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Create Deployment Issue "
-          echo "***********************************************"
-          echo " "
-          echo "  Create issue for deployment, current environment: $deployment_environment, from: $configuration_environments"
-          
-          # Environment list to an array
-          read -a array <<< "$configuration_environments"
 
-          # Find the current environment in the list
-          currentIndex=-1
-          for i in "${!array[@]}"; do
-            if [[ "${array[$i]}" = "$deployment_environment" ]]; then
-              currentIndex=$i;
-            fi
-          done
+            if [[ "$execute_deployment" != "true" ]]; then
 
-          if (( $currentIndex == -1 )); then
-            echo "Error, the current environment is not in the list of deployment"
-            exit 1
-          fi
+              echo " "
+              echo "***********************************************"
+              echo "Create Deployment Issue"
+              echo "***********************************************"
+              echo " "
+              echo "  Create issue for deployment, current environment: $deployment_environment, from: $configuration_environments"
+              
+              # Environment list to an array
+              read -a array <<< "$configuration_environments"
+    
+              # Find the current environment in the list
+              currentIndex=-1
+              for i in "${!array[@]}"; do
+                if [[ "${array[$i]}" = "$deployment_environment" ]]; then
+                  currentIndex=$i;
+                fi
+              done
+    
+              if (( $currentIndex == -1 )); then
+                echo "Error, the current environment is not in the list of deployment"
+                exit 1
+              fi
+    
+              # Find the next environment for deployment
+              sizearray=${#array[@]}
+              nextindex=$(($currentIndex + 1))
+    
+              if (( $sizearray > $nextindex )); then
+                nextenvironment=${array[$nextindex]}
+    
+                echo "  Next environment to deploy the application: $nextenvironment"
+                gh -R "${{ github.repository }}" issue create \
+                    -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
+                    -a "${{ github.event.issue.assignee.login }}" \
+                    -b "The deployment job in $deployment_environment environment triggered this issue" \
+                    -l "deployment" \
+                    -p "${{ env.deployment_project }}"
+              else
+                echo "  No more environments to deploy"
+              fi
+            fi  # $execute_deployment != true
 
-          # Find the next environment for deployment
-          sizearray=${#array[@]}
-          nextindex=$(($currentIndex + 1))
-
-          if (( $sizearray > $nextindex )); then
-            nextenvironment=${array[$nextindex]}
-
-            echo "  Next environment to deploy the application: $nextenvironment"
-            gh -R "${{ github.repository }}" issue create \
-                -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
-                -a "${{ github.event.issue.assignee.login }}" \
-                -b "The deployment job in $deployment_environment environment triggered this issue" \
-                -l "deployment" \
-                -p "${{ env.deployment_project }}"
-          else
-            echo "  No more environments to deploy"
-          fi
-
+          fi # steps.deployment-ch1.outputs.outcome != success 
