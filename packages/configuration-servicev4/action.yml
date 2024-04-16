@@ -7,30 +7,19 @@ runs:
   using: "composite"
   steps:
 
-    - name: Debug dump GitHub context
+    # Example: printing context information to the log
+    # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
+    - name: Get from github context the build or deployment data
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
-      shell: bash
-      run: |
-        #
-        # Example: printing context information to the log
-        # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
-        #
-        echo " "
-        echo "*****************************************************"
-        echo "Debug dump GitHub context - V4 "
-        echo "*****************************************************"
-        echo " "
-        echo "$GITHUB_CONTEXT"
-        echo " "
-
-    - name: Get from github context the build or deployment data
       shell: bash
       run: |
         echo " "
         echo "******************************************************"
         echo "Get from github context the build or deployment data "
         echo "******************************************************"
+        echo " "
+        echo "  GITHUB_CONTEXT: $GITHUB_CONTEXT"
         echo " "
         echo "  Values from github context: "
         echo "    Issue number: ${{ github.event.issue.number}}"
@@ -169,8 +158,8 @@ runs:
           parse_yaml ".$deployment_environment.deployment.organization"; echo "configuration_deployment_organization=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.deployment.mulesoft_environment"; echo "configuration_deployment_mulesoft_environment=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
-          
           parse_yaml ".$deployment_environment.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
@@ -223,18 +212,19 @@ runs:
         echo "*********************************************************"
         echo " "
         echo "Configuration variables:"
-        echo "  configuration_settings= "$configuration_settings
-        echo "  configuration_skiptests= "$configuration_skiptests          
-        echo "  configuration_environments= "$configuration_environments
-        echo "  configuration_apptype= "$configuration_apptype
-        echo "  configuration_redeployment_next_environment= "$configuration_redeployment_next_environment
+        echo "  configuration_settings= $configuration_settings"
+        echo "  configuration_skiptests= $configuration_skiptests"          
+        echo "  configuration_environments= $configuration_environments"
+        echo "  configuration_apptype= $configuration_apptype"
+        echo "  configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
         echo "  configuration_test_properties= $configuration_test_properties"
-        echo "  configuration_deployment_name= "$configuration_deployment_name
-        echo "  configuration_deployment_organization= "$configuration_deployment_organization
-        echo "  configuration_deployment_host= "$configuration_deployment_host
-        echo "  configuration_deployment_customlogger= "$configuration_deployment_customlogger
-        echo "  configuration_deployment_type= "$configuration_deployment_type
+        echo "  configuration_deployment_name= $configuration_deployment_name"
+        echo "  configuration_deployment_organization= $configuration_deployment_organization"
+        echo "  configuration_deployment_host= $configuration_deployment_host"
+        echo "  configuration_deployment_customlogger= $configuration_deployment_customlogger"
+        echo "  configuration_deployment_mulesoft_environment= $configuration_deployment_mulesoft_environment"
         echo "  configuration_cloudhub= $configuration_cloudhub"
+        echo "  configuration_bat= $configuration_bat"
         echo "BAT variables:"
         echo "  salesforcesapi= "$salesforcesapi
         echo " "

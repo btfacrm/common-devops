@@ -1,9 +1,5 @@
 name: 'Deploys a service to Cloudhub/GovCloud'
 description: 'Deploys a service to Cloudhub/GovCloud'
-inputs:
-  deployment-env:
-    required: true
-    description: Deployment environment for the service
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
@@ -48,12 +44,10 @@ runs:
       # - configuration_deployment_name
       # - configuration_deployment_organization
       # - configuration_deployment_host
+      # - configuration_deployment_mulesoft_environment
       # - configuration_cloudhub
       # - cicd_connectedapp_clientid
       # - cicd_connectedapp_secret
-
-      echo "Assigning variables to the script"
-      deploymentenvironment="${{ inputs.deployment-env }}"
 
       # Get the jar file
       jar=$(ls *.jar)
@@ -67,7 +61,7 @@ runs:
       QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
                   --client_id $cicd_connectedapp_clientid \
                   --client_secret $cicd_connectedapp_secret \
-                  --environment $deploymentenvironment \
+                  --environment $configuration_deployment_mulesoft_environment \
                   --organization $configuration_deployment_organization \
                   --host $configuration_deployment_host \
                   --output json $configuration_deployment_name"
@@ -124,7 +118,7 @@ runs:
       --client_secret $cicd_connectedapp_secret \
       --organization $configuration_deployment_organization \
       --host $configuration_deployment_host \
-      --environment $deploymentenvironment \
+      --environment $configuration_deployment_mulesoft_environment \
       $configuration_cloudhub --output json $configuration_deployment_name $jar"
       echo "  Deployment command: $CREATEUPDATE_APP"
       echo " "

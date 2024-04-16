@@ -127,11 +127,9 @@ jobs:
           echo " "
           ls -l
 
-      - name: Deploy the service in the Cloudhub1 
+      - name: Deploy the service in Cloudhub1 
         id: deployment-ch1
         uses: btfacrm/common-devops/packages/process-cloudhub1v2@main
-        with:
-          deployment-env: ${{ env.deployment_environment }}
 
       - name: Create badge for deployment
         uses: btfacrm/common-devops/packages/badgev2@main
