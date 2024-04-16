@@ -12,7 +12,6 @@ env:
   MESSAGE_SERVICE_SUCCESS_DEPLOYED: "The service was successfully deployed"
   MESSAGE_SERVICE_INTERNAL_ERROR: "There was an internal error in the deployment process"
 
-
   MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
   MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
   MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
@@ -143,6 +142,12 @@ jobs:
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
           folder: ${{ env.service_name }}
 
+      - name: Execute Mulesoft BAT
+        id: bat-testing
+        uses: btfacrm/common-devops/packages/process-bat@main
+        with:
+          deployment-env: ${{ env.deployment_environment }}      
+
       #################################################################
       # Issue Management: create, close, add comments
       #################################################################
@@ -176,16 +181,13 @@ jobs:
 
             gh issue close ${{ github.event.issue.number }} \
               -r "completed"
+
+            echo "  Deployment analysis:"
+            echo "    github.run_number= ${{github.run_number}}"
+            echo "    github.run_attempt= ${{github.run_attempt}}"
+            echo "    github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
             echo " "
 
-            echo "***********************************************"
-            echo "Deployment analysis"
-            echo "***********************************************"
-            echo " "
-            echo "  github.run_number= ${{github.run_number}}"
-            echo "  github.run_attempt= ${{github.run_attempt}}"
-            echo "  github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
-  
             execute_deployment="true"
             if [[ "${{github.run_attempt}}" != "1" ]]; then
               echo "  The workflow was re-run"
@@ -201,15 +203,13 @@ jobs:
               echo "  This is the first time the workflow is running, it is a candidate to be deployed to the next environment"
             fi
 
-
             if [[ "$execute_deployment" == "true" ]]; then
-
               echo " "
-              echo "***********************************************"
-              echo "Create Deployment Issue"
-              echo "***********************************************"
+              echo "  ***********************************************"
+              echo "  Create Deployment Issue"
+              echo "  ***********************************************"
               echo " "
-              echo "  Create issue for deployment, current environment: $deployment_environment, from: $configuration_environments"
+              echo "  Current environment: $deployment_environment, from: $configuration_environments"
               
               # Environment list to an array
               read -a array <<< "$configuration_environments"
@@ -238,7 +238,7 @@ jobs:
                 gh -R "${{ github.repository }}" issue create \
                     -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
                     -a "${{ github.event.issue.assignee.login }}" \
-                    -b "The deployment job in $deployment_environment environment triggered this issue" \
+                    -b "The deployment job in $deployment_environment environment triggered this deployment" \
                     -l "deployment" \
                     -p "${{ env.deployment_project }}"
               else

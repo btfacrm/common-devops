@@ -1,12 +1,6 @@
 name: 'Execute Mulesoft BAT'
 description: 'Execute Mulesoft BAT'
 inputs:
-  keyvault-key:
-    required: true
-    description: The name of the KeyVault
-  azure-credentials:
-    required: true
-    description: Azure Credentials for login
   deployment-env:
     required: true
     description: Deployment environment for the service
