@@ -36,9 +36,9 @@ runs:
     shell: bash
     run: |
       echo " "
-      echo "***************************************"
-      echo "Deploy the service to CloudHub1"
-      echo "***************************************"
+      echo "************************************************************"
+      echo "Deploy the service to CloudHub1, mulesoft environment: $configuration_deployment_mulesoft_environment"
+      echo "************************************************************"
       echo " "
       # Environment variables:
       # - configuration_deployment_name
