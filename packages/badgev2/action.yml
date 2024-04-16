@@ -34,7 +34,7 @@ runs:
 
         curl -o ${{ inputs.file }} --verbose --get \
           --data-urlencode 'label=${{ inputs.label }}' \
-          --data-urlencode 'message=${{ inputs.status }}?' \
+          --data-urlencode 'message=${{ inputs.status }}' \
           --data-urlencode 'color=${{ inputs.color }}' \
           'https://img.shields.io/static/v1'
         echo " " >> ${{ inputs.file }}
