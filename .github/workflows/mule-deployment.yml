@@ -202,7 +202,7 @@ jobs:
             fi
 
 
-            if [[ "$execute_deployment" != "true" ]]; then
+            if [[ "$execute_deployment" == "true" ]]; then
 
               echo " "
               echo "***********************************************"
