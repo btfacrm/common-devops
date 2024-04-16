@@ -141,7 +141,7 @@ runs:
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
 
     - name: Create badge for code coverage
-      uses: btfacrm/common-devops/packages/badge@main
+      uses: btfacrm/common-devops/packages/badgev2@main
       if: always()
       with:
         label: Code coverage

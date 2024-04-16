@@ -135,7 +135,7 @@ jobs:
 #          deployment-env: ${{ env.deployment_environment }}
 
       - name: Create badge for deployment
-        uses: btfacrm/common-devops/packages/badge@main
+        uses: btfacrm/common-devops/packages/badgev2@main
         with:
           label: '${{ env.deployment_environment }} version'
           status: '${{ env.deployment_version }}'

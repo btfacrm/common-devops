@@ -227,7 +227,7 @@ jobs:
           name: ${{ env.service_version }}
 
       - name: Create badge for workflow number
-        uses: btfacrm/common-devops/packages/badge@main
+        uses: btfacrm/common-devops/packages/badgev2@main
         if: "!contains(env.service_version, 'snapshot')"
         with:
           label: Build job
@@ -236,7 +236,7 @@ jobs:
           file: ${{ env.service_name }}-wf.svg
       
       - name: Create badge release only for jar files
-        uses: btfacrm/common-devops/packages/badge@main
+        uses: btfacrm/common-devops/packages/badgev2@main
         if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
         with:
           label: Release
