@@ -13,27 +13,27 @@ runs:
   using: "composite"
   steps:
 
-  #- name: Install NodeJs
-  #  uses: actions/setup-node@v3
-  #  with:
-  #    node-version: 20
+  - name: Install NodeJs
+    uses: actions/setup-node@v3
+    with:
+      node-version: 20
 
-  #- name: Install Anypoint CLI
-  #  shell: bash
-  #  run: |
-  #    echo " "
-  #    echo "***************************************"
-  #    echo "Install Anypoint CLI"
-  #    echo "***************************************"
-  #    echo " "
-  #    echo "Install anypoint-cli-v4..."
-  #    npm install -g anypoint-cli-v4
-  #    echo "anypoint-cli-v4 --version: "
-  #    anypoint-cli-v4 --version
-  #    echo " "
-  #    echo "Installing cloudhub-plugin"
-  #    anypoint-cli-v4 plugins:install anypoint-cli-cloudhub-plugin
-  #    echo " "
+  - name: Install Anypoint CLI
+    shell: bash
+    run: |
+      echo " "
+      echo "***************************************"
+      echo "Install Anypoint CLI"
+      echo "***************************************"
+      echo " "
+      echo "Install anypoint-cli-v4..."
+      npm install -g anypoint-cli-v4
+      echo "anypoint-cli-v4 --version: "
+      anypoint-cli-v4 --version
+      echo " "
+      echo "Installing cloudhub-plugin"
+      anypoint-cli-v4 plugins:install anypoint-cli-cloudhub-plugin
+      echo " "
 
   - id: deployment
     name: Deploy the service to CloudHub1
@@ -51,10 +51,6 @@ runs:
       # - configuration_cloudhub
       # - cicd_connectedapp_clientid
       # - cicd_connectedapp_secret
-
-      #echo "outcome=failure" >> $GITHUB_OUTPUT
-      echo "outcome=success" >> $GITHUB_OUTPUT
-      exit 0
 
       echo "Assigning variables to the script"
       deploymentenvironment="${{ inputs.deployment-env }}"
