@@ -58,9 +58,9 @@ runs:
         # Verify if the test report was created
         if test -f ${{ inputs.path-report}}; then
           echo "The test report is present"
-          label_tests=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.tests"))
-          label_run=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.runs"))
-          label_conclusion=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".conclusion"))
+          label_tests=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.tests")
+          label_run=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.runs")
+          label_conclusion=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".conclusion")
 
           echo "BADGE_STATUS=$label_tests tests, $label_run runs: $label_conclusion" >> $GITHUB_ENV
           case $label_conclusion in
