@@ -1,5 +1,5 @@
-name: 'Summary - Publish test results'
-description: 'Summary - Publish test results'
+name: Create a code badge
+description: Create a code badge
 inputs:
   label:
     required: true

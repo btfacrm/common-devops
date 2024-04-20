@@ -102,6 +102,7 @@ runs:
         content="${content//$'\r'/'%0D'}"
         # end of optional handling for multi line json
         echo "::set-output name=packageJson::$content"
+        echo " "
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -140,6 +141,7 @@ runs:
         echo " "
         echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
+        echo " "
 
     - name: Create badge for code coverage
       uses: btfacrm/common-devops/packages/badgev2@main

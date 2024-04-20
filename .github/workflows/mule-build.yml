@@ -17,22 +17,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
-    # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      id-token: write
-      issues: write
-      discussions: write
-      packages: write
-      pages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
-
     steps:
 
       - name: Create a GitHub App installation access token
