@@ -90,7 +90,7 @@ runs:
       if: always()
       with:
         label: ${{inputs.badge-label}}
-        status: '${{ env.BADGE_STATUS }}'
+        status: ${{ env.BADGE_STATUS }}
         color: ${{ env.BADGE_COLOR }}
         file: ${{ env.service_name }}-${{inputs.badge-suffix}}.svg
         folder: ${{ env.service_name }}
