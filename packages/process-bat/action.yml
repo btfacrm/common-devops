@@ -34,7 +34,7 @@ runs:
         echo "outcome=success" >> $GITHUB_OUTPUT      
 
     - name: Summary - Test
-      uses: CoveredCA/common-devops/packages/summary-junit@main
+      uses: btfacrm/common-devops/packages/summary-junit@main
       if: always()
       with:
         badge-label: ${{ env.deployment_environment }} test

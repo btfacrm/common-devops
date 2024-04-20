@@ -37,14 +37,34 @@ runs:
     # https://github.com/EnricoMi/publish-unit-test-result-action
     # Note: permissions on job, check documentation
     # ***********************************************************
-    - name: Summary - Publish test results
-      id: unit-test-results
+    #- name: Summary - Publish test results
+    #  id: unit-test-results
+    #  if: ${{ hashFiles(inputs.path-report) != '' }}
+    #  uses: EnricoMi/publish-unit-test-result-action@v2
+    #  with:
+    #    files: |
+    #      ${{inputs.path-report}}
+    #    check_name: Test Results
+
+    - name: Debug action
       if: ${{ hashFiles(inputs.path-report) != '' }}
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      with:
-        files: |
-          ${{inputs.path-report}}
-        check_name: Test Results
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "was this action executed?"
+        echo "*****************************************************"
+        echo " "
+
+
+    - name: Debug action
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "After Publish test results"
+        echo "*****************************************************"
+        echo " "
 
     - name: Set badge color
       shell: bash
