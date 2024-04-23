@@ -55,14 +55,12 @@ jobs:
                   "btfacrm_anypoint_environment_prd_secret": "${{ secrets.BTFACRM_ANYPOINT_ENVIRONMENT_PRD_SECRET }}",
 
                   "btfacrm_apisalesforce_dev_clientsecret": "${{ secrets.BTFACRM_APISALESFORCE_DEV_CLIENTSECRET }}",
-                  "btfacrm_apisalesforce_dev_clientid": "${{ secrets.BTFACRM_APISALESFORCE_PRD_CLIENTID }}",
-                  "btfacrm_apisalesforce_prd_clientid": "${{ secrets.BTFACRM_HTTPS_DEV_JKSKEYPASSWORD }}",
+                  "btfacrm_apisalesforce_dev_clientid": "${{ secrets.BTFACRM_APISALESFORCE_DEV_CLIENTID }}",
                   "btfacrm_apisalesforce_prd_clientsecret": "${{ secrets.BTFACRM_APISALESFORCE_PRD_CLIENTSECRET }}",
+                  "btfacrm_apisalesforce_prd_clientid": "${{ secrets.BTFACRM_APISALESFORCE_PRD_CLIENTID }}",
 
                   "cicd_connectedapp_clientid": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_CLIENTID }}",
                   "cicd_connectedapp_secret": "${{ secrets.BTFACRM_CICD_CONNECTEDAPP_SECRET }}",
-
-                  "github_gist_accesstoken": "${{ secrets.BTFACRM_GITHUB_GIST_ACCESSTOKEN }}",
 
                   "btfacrm_https_dev_jkspath": "${{ secrets.BTFACRM_HTTPS_DEV_JKSPATH }}",
                   "btfacrm_https_dev_jksalias": "${{ secrets.BTFACRM_HTTPS_DEV_JKSALIAS }}",
