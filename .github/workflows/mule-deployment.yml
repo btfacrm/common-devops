@@ -148,11 +148,11 @@ jobs:
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
           folder: ${{ env.service_name }}
 
-      - name: Execute Mulesoft BAT
-        id: bat-testing
-        uses: btfacrm/common-devops/packages/process-bat@main
-        with:
-          deployment-env: ${{ env.deployment_environment }}      
+      #- name: Execute Mulesoft BAT
+      #  id: bat-testing
+      #  uses: btfacrm/common-devops/packages/process-bat@main
+      #  with:
+      #    deployment-env: ${{ env.deployment_environment }}      
 
       #################################################################
       # Issue Management: create, close, add comments
