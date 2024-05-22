@@ -93,6 +93,9 @@ jobs:
                   "btfacrm_notification_clientid": "${{ secrets.BTFACRM_NOTIFICATION_CLIENTID }}",
                   "btfacrm_notification_clientsecret": "${{ secrets.BTFACRM_NOTIFICATION_CLIENTSECRET }}",
 
+                  "btfacrm_bcrm_salesforce_sapi_clientid": "${{ secrets.BTFACRM_BCRM_SALESFORCE_SAPI_CLIENTID }}",
+                  "btfacrm_bcrm_salesforce_sapi_clientsecret": "${{ secrets.BTFACRM_BCRM_SALESFORCE_SAPI_CLIENTSECRET }}",
+
                   "btfacrm_salesforce_dev_storepassword": "${{ secrets.BTFACRM_SALESFORCE_DEV_STOREPASSWORD }}",
                   "btfacrm_salesforce_dev_principal": "${{ secrets.BTFACRM_SALESFORCE_DEV_PRINCIPAL }}",
                   "btfacrm_salesforce_dev_consumerkey": "${{ secrets.BTFACRM_SALESFORCE_DEV_CONSUMERKEY }}",
