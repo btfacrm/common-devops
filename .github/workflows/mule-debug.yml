@@ -100,13 +100,9 @@ jobs:
                   "mulesoft_nexus_ee_user": "${{ secrets.BTFACRM_MULESOFT_NEXUS_EE_USER }}",
                   "mulesoft_nexus_ee_password": "${{ secrets.BTFACRM_MULESOFT_NEXUS_EE_PASSWORD }}",
 
-                  "btfacrm_salesforce_dev_storepassword": "${{ secrets.BTFACRM_SALESFORCE_DEV_STOREPASSWORD }}",
                   "btfacrm_salesforce_dev_principal": "${{ secrets.BTFACRM_SALESFORCE_DEV_PRINCIPAL }}",
                   "btfacrm_salesforce_dev_consumerkey": "${{ secrets.BTFACRM_SALESFORCE_DEV_CONSUMERKEY }}",
-                  "btfacrm_salesforce_dev_keystore": "${{ secrets.BTFACRM_SALESFORCE_DEV_KEYSTORE }}",
-                  "btfacrm_salesforce_dev_audienceurl": "${{ secrets.BTFACRM_SALESFORCE_DEV_AUDIENCEURL }}",
                   "btfacrm_salesforce_dev_tokenendpoint": "${{ secrets.BTFACRM_SALESFORCE_DEV_TOKENENDPOINT }}",
-                  "btfacrm_salesforce_dev_certificatealias": "${{ secrets.BTFACRM_SALESFORCE_DEV_CERTIFICATEALIAS }}",
 
                   "btfacrm_salesforce_prd_storepassword": "${{ secrets.BTFACRM_SALESFORCE_PRD_STOREPASSWORD }}",
                   "btfacrm_salesforce_prd_principal": "${{ secrets.BTFACRM_SALESFORCE_PRD_PRINCIPAL }}",
